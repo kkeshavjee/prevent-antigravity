@@ -30,7 +30,14 @@ Antigravity is a digital health intervention system designed to help patients pr
 - Node.js & npm
 - Python 3.9+
 
-### Installation
+### Quick Start (Windows)
+For Windows users, convenience scripts are provided to start the application components:
+
+- **Frontend**: Double-click `run_frontend.bat` or run it from the terminal.
+- **Backend**: Double-click `run_backend.bat` or run it from the terminal.
+- **Initial Setup**: Run `setup_frontend.bat` to install dependencies.
+
+### Manual Installation
 
 1.  **Clone the repo**:
     ```bash
