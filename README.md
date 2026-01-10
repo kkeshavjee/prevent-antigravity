@@ -31,11 +31,7 @@ Antigravity is a digital health intervention system designed to help patients pr
 - Python 3.9+
 
 ### Quick Start (Windows)
-For Windows users, convenience scripts are provided to start the application components:
-
-- **Frontend**: Double-click `run_frontend.bat` or run it from the terminal.
-- **Backend**: Double-click `run_backend.bat` or run it from the terminal.
-- **Initial Setup**: Run `setup_frontend.bat` to install dependencies.
+Double-click `start_app.bat` to automatically set up dependencies (if needed) and launch both the **Backend** and **Frontend** in separate windows.
 
 ### Manual Installation
 
