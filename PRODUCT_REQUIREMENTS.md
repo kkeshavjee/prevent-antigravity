@@ -98,6 +98,12 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
         * **Ongoing Motivation Measurement:** Motivation levels will be measured on an ongoing basis to ensure optimized motivation, drawing upon strategies like Importance and Confidence Rulers[cite: 2735, 2920, 3227]. Motivational inputs will include logic, emotional arguments, social proof, spiritual goals (if patient has that interest), and appeals to personal and social identities (e.g., "I'm a father" or "I'm a role model")[cite: 19, 55].
 
+    *   **Reinforcement Learning (RL) Optimization:**
+        *   The Motivation Agent will utilize **Reinforcement Learning** to dynamically adapt its strategy over time.
+        *   **Action Space:** Choosing between different motivational appeals (e.g., Logical, Emotional, Fear-based, Social Proof, Gamification).
+        *   **Reward Signal:** User engagement (response length, sentiment), completion of daily goals, and movement up the "Stages of Change" scale.
+        *   **Goal:** To learn the optimal "policy" for each individual patient—discovering which type of motivation yields the highest sustained engagement and behavior change.
+
     * **Gamified Education (Learning Feature):** The bot will incorporate gamification elements for disease education, which is more suited for learning than self-management[cite: 367, 440].
 
         * **Purpose:** To teach patients how to make better choices for diabetes care by assisting a character whose diabetes is poorly managed, providing a low-risk opportunity to learn from mistakes and experiment with new ideas without experimenting on themselves[cite: 379, 381, 383].
