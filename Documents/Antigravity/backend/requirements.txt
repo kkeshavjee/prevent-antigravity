@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-dspy-ai
-pydantic
-python-dotenv
-httpx
-google-generativeai
-openpyxl
