@@ -25,7 +25,7 @@ It is named Dawn to symbolize the dawn, a time of hope and new beginnings.  It i
 - **Frontend**: React (Vite), TypeScript, Tailwind CSS, shadcn/ui.
 - **Backend**: Python FastAPI.
 - **Deployment**: Netlify (Frontend).
-- **LLM**: Gemini 3.0 Flash
+- **LLM**: Gemini 1.5 Flash
 
 ## Getting Started
 
