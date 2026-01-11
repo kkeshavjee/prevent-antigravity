@@ -1,11 +1,13 @@
-# Antigravity: Diabetes Prevention Platform
+# PREVENT Dawn: Diabetes Prevention Platform
 
-Antigravity is a digital health intervention system designed to help patients prevent diabetes through personalized readiness assessments and AI-driven coaching.
+PREVENT Dawn is a digital health intervention system designed to help patients prevent diabetes through personalized readiness assessments and AI-driven coaching.
+
+It is named Dawn to symbolize the dawn, a time of hope and new beginnings.  It is meant to offer those at risk of developing diabetes new hope. 
 
 ## Key Features
 
 ### 1. Patient Dashboard
-- **Personalized Overview**: Displays patient name, allocated physician (e.g., Dr. Smith), and key health metrics.
+- **Personalized Overview**: Displays patient name, most responsible physician (e.g., Dr. Smith), and key health metrics.
 - **Health Metrics**: Visualizes Diabetes Risk Score, A1c, FBS, and Weight.
 - **Readiness Profile**: Shows the user's current stage of change, confidence, and importance ratings after assessment.
 - **Patient Lookup**: Securely connects users to their specific profile and doctor based on their name.
@@ -23,6 +25,7 @@ Antigravity is a digital health intervention system designed to help patients pr
 - **Frontend**: React (Vite), TypeScript, Tailwind CSS, shadcn/ui.
 - **Backend**: Python FastAPI.
 - **Deployment**: Netlify (Frontend).
+- **LLM**: Gemini 3.0 Flash
 
 ## Getting Started
 
