@@ -49,6 +49,18 @@ Double-click `start_app.bat` to automatically set up dependencies (if needed) an
     ```bash
     cd backend
     pip install -r requirements.txt
+    ```
+    #### Environment Configuration
+    The AI features require a Google Gemini API key.
+    - Create a `.env` file in the `backend/` directory (you can use `.env.example` as a template).
+    - Obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+    - Add the key to your `.env` file:
+      ```env
+      GOOGLE_API_KEY=your_api_key_here
+      ```
+
+    #### Run Backend:
+    ```bash
     python main.py
     ```
 
