@@ -10,8 +10,11 @@ class EducationAgent(BaseAgent):
     async def process(self, user_input: str, state: AgentState) -> dict:
         context = f"Risk Score: {state.patient_profile.diabetes_risk_score.value}. " 
         
+        # Format history
+        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-10:]])
+
         # Call Gemini via DSPy
-        result = self.predictor(user_context=context, user_input=user_input)
+        result = self.predictor(history=history_str, user_context=context, user_input=user_input)
         
         return {
             "response": result.response,

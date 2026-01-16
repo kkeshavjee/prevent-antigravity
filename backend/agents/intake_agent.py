@@ -19,8 +19,11 @@ class IntakeAgent(BaseAgent):
         # Serialize profile for the LLM
         profile_json = state.patient_profile.json()
         
+        # Format history (last 5 turns is enough for intake)
+        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-5:]])
+
         # Call Gemini via DSPy
-        result = self.predictor(user_input=user_input, user_profile=profile_json)
+        result = self.predictor(history=history_str, user_input=user_input, user_profile=profile_json)
         
         updated_context = {}
         if result.extracted_name:

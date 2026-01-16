@@ -1,25 +1,77 @@
 @echo off
+setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
-:: Check for node_modules in frontend directory
+echo ==========================================
+echo      Antigravity Startup Helper
+echo ==========================================
+echo.
+
+:: 1. Check for Node.js
+where node >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Node.js is not installed or not in your PATH.
+    echo Please install Node.js from https://nodejs.org/
+    pause
+    exit /b 1
+)
+
+:: 2. Check for Python
+where python >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Python is not installed or not in your PATH.
+    echo Please install Python from https://www.python.org/
+    pause
+    exit /b 1
+)
+
+:: 3. Setup Backend Virtual Environment
+echo [1/3] Setting up Backend...
+if not exist "backend\venv" (
+    echo Creating virtual environment...
+    python -m venv backend\venv
+)
+
+:: Install/Update requirements
+echo Installing/Updating backend dependencies...
+call backend\venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r backend\requirements.txt
+
+:: 4. Setup Frontend
+echo.
+echo [2/3] Setting up Frontend...
 if not exist "frontend\node_modules" (
-    echo Installing dependencies...
+    echo Installing frontend dependencies...
     cd frontend
     call npm install
     cd ..
 )
 
-echo Starting Backend...
-:: Launch Backend in a new window
-start "Antigravity Backend" cmd /k "uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000"
+:: 5. Launch Application
+echo.
+echo [3/3] Starting Application...
 
-echo Starting Frontend...
-:: Launch Frontend in a new window
+:: Backend
+echo Starting Backend in a new window...
+start "Antigravity Backend" cmd /k "cd backend && ..\backend\venv\Scripts\activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+
+:: Wait a moment for backend to initialize
+timeout /t 2 /nobreak >nul
+
+:: Frontend
+echo Starting Frontend in a new window...
 start "Antigravity Frontend" cmd /k "cd frontend && npm run dev"
 
 echo.
-echo Application started!
-echo Backend running on http://localhost:8000
-echo Frontend running on http://localhost:5173
+echo ==========================================
+echo Application is starting!
+echo.
+echo Backend logs: Check the 'Antigravity Backend' window
+echo Frontend logs: Check the 'Antigravity Frontend' window
+echo.
+echo Backend URL:  http://localhost:8000
+echo Frontend URL: http://localhost:5173
+echo ==========================================
 echo.
 pause

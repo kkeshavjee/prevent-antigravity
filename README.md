@@ -30,8 +30,20 @@ Antigravity is a digital health intervention system designed to help patients pr
 - Node.js & npm
 - Python 3.9+
 
-### Quick Start (Windows)
-Double-click `start_app.bat` to automatically set up dependencies (if needed) and launch both the **Backend** and **Frontend** in separate windows.
+### Quick Start
+
+#### Windows
+Double-click `start_app.bat`. This will:
+1.  Check for Node.js and Python.
+2.  Set up a Python virtual environment for the backend and install dependencies.
+3.  Install frontend dependencies (if missing).
+4.  Launch both **Backend** and **Frontend** in separate windows.
+
+#### macOS / Linux
+1.  Open Terminal.
+2.  Make the script executable: `chmod +x start_app.sh`
+3.  Run the script: `./start_app.sh`
+    - This performs the same setup steps as the Windows version and opens new Terminal windows for the services on macOS.
 
 ### Manual Installation
 

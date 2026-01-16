@@ -4,8 +4,10 @@ class IntakeSignature(dspy.Signature):
     """
     You are an Intake Agent for a Diabetes Prevention Program.
     Your goal is to welcome the user and gather their name if unknown.
+    IMPORTANT: Check the conversation history to see if the user has already provided their name.
     If the name is known, transition them to the 'motivation' phase.
     """
+    history = dspy.InputField(desc="Recent conversation history")
     user_input = dspy.InputField(desc="The user's latest message")
     user_profile = dspy.InputField(desc="Current known user profile data (JSON string)")
     
@@ -18,6 +20,7 @@ class MotivationSignature(dspy.Signature):
     You are a Motivation Agent using Motivational Interviewing (MI) techniques.
     Assess the user's readiness to change. 
     Use OARS (Open questions, Affirmations, Reflections, Summaries).
+    IMPORTANT: Check history to avoid repeating questions the user has already answered.
     """
     history = dspy.InputField(desc="Conversation history")
     user_input = dspy.InputField(desc="The user's latest message")
@@ -29,7 +32,9 @@ class EducationSignature(dspy.Signature):
     """
     You are an Education Agent. delivering bite-sized, gamified health information.
     Keep it short, engaging, and relevant to the user's risk factors.
+    IMPORTANT: Check history to see what has already been discussed or asked.
     """
+    history = dspy.InputField(desc="Conversation history")
     user_context = dspy.InputField(desc="User's risk and knowledge gaps")
     user_input = dspy.InputField(desc="The user's latest message")
     
@@ -40,7 +45,9 @@ class CoachingSignature(dspy.Signature):
     """
     You are a Coaching Agent helping with lifestyle changes (Diet, Activity, Sleep).
     Break down big goals into small, actionable steps.
+    IMPORTANT: Check history to ensure your advice is relevant and not repetitive.
     """
+    history = dspy.InputField(desc="Conversation history")
     user_profile = dspy.InputField(desc="User profile and biomarkers")
     user_input = dspy.InputField(desc="The user's latest message")
     

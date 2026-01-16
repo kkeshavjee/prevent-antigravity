@@ -15,8 +15,11 @@ class CoachingAgent(BaseAgent):
             f"A1c: {state.patient_profile.biomarkers.a1c}"
         )
         
+        # Format history
+        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-10:]])
+
         # Call Gemini via DSPy
-        result = self.predictor(user_profile=profile_summary, user_input=user_input)
+        result = self.predictor(history=history_str, user_profile=profile_summary, user_input=user_input)
         
         return {
             "response": result.response,

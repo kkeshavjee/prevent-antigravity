@@ -8,8 +8,8 @@ class MotivationAgent(BaseAgent):
         self.predictor = dspy.Predict(MotivationSignature)
 
     async def process(self, user_input: str, state: AgentState) -> dict:
-        # Format history
-        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-5:]])
+        # Format history (increased window to 10 for better context)
+        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-10:]])
         
         # Call Gemini via DSPy
         result = self.predictor(history=history_str, user_input=user_input)
