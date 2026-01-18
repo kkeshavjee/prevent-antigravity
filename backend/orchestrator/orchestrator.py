@@ -21,10 +21,18 @@ class Orchestrator:
         self.states: Dict[str, AgentState] = {}
         
         # Initialize Data Loader
-        # Assuming file is in root workspace
         data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "PREVENT_Inform_Table_V2 (2).xlsx")
+        print(f"Orchestrator: Loading database from {data_path}...")
         self.data_loader = DataLoader(data_path)
         self.user_database = self.data_loader.load_data()
+        
+        if self.user_database:
+            print(f"Orchestrator: Database loaded successfully with {len(self.user_database)} users.")
+            # Print first few IDs for verification
+            sample_ids = list(self.user_database.keys())[:5]
+            print(f"Orchestrator: Sample IDs: {sample_ids}")
+        else:
+            print("Orchestrator WARNING: Database is empty!")
 
     async def get_or_create_state(self, user_id: str) -> AgentState:
         if user_id not in self.states:

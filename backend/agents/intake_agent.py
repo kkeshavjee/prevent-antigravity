@@ -9,10 +9,14 @@ class IntakeAgent(BaseAgent):
         self.predictor = dspy.Predict(IntakeSignature)
 
     async def process(self, user_input: str, state: AgentState) -> dict:
-        # Check if we already have the name
-        if state.patient_profile.name:
+        # Debug logging
+        print(f"IntakeAgent: Processing request. Current profile name: '{state.patient_profile.name}'")
+        
+        # If name is already present (e.g. from DB load), we can skip asking
+        if state.patient_profile.name and state.patient_profile.name != "User":
+             print(f"IntakeAgent: Name '{state.patient_profile.name}' is already known. Transitioning.")
              return {
-                "response": f"Welcome back, {state.patient_profile.name}. Let's check in on your motivation.",
+                "response": f"Welcome back, {state.patient_profile.name}. It's great to see you again. Let's talk about your motivation for joining the Diabetes Prevention Program.",
                 "next_agent": "motivation"
             }
         

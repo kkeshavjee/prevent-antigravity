@@ -7,7 +7,19 @@ export default function Chat() {
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [userId, setUserId] = useState(() => `user_${Math.floor(Math.random() * 1000)}`);
+    const [userId, setUserId] = useState(() => {
+        const saved = localStorage.getItem('antigravity_userId');
+        if (saved) return saved;
+        const newId = `user_${Math.floor(Math.random() * 1000)}`;
+        localStorage.setItem('antigravity_userId', newId);
+        return newId;
+    });
+
+    // Sync userId to localStorage if it's manually changed in the UI
+    useEffect(() => {
+        localStorage.setItem('antigravity_userId', userId);
+    }, [userId]);
+
     const chatEndRef = useRef<HTMLDivElement>(null);
     const userName = localStorage.getItem('userName') || 'Guest';
 

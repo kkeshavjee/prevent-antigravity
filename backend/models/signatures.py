@@ -4,14 +4,17 @@ class IntakeSignature(dspy.Signature):
     """
     You are an Intake Agent for a Diabetes Prevention Program.
     Your goal is to welcome the user and gather their name if unknown.
-    IMPORTANT: Check the conversation history to see if the user has already provided their name.
-    If the name is known, transition them to the 'motivation' phase.
+    
+    IMPORTANT:
+    1. If the 'user_profile' (JSON) already contains a specific name (not empty or "User"), greet the user by that name and set next_step to 'transition_to_motivation'.
+    2. If the name is unknown, warmheartedly ask for it.
+    3. Once the name is provided, transition them to the 'motivation' phase.
     """
     history = dspy.InputField(desc="Recent conversation history")
     user_input = dspy.InputField(desc="The user's latest message")
     user_profile = dspy.InputField(desc="Current known user profile data (JSON string)")
     
-    response = dspy.OutputField(desc="A helpful, warm response to the user")
+    response = dspy.OutputField(desc="A helpful, warm response to the user. If name is known, greet them by it.")
     next_step = dspy.OutputField(desc="The next step: 'ask_name' or 'transition_to_motivation'")
     extracted_name = dspy.OutputField(desc="The user's name, if found in the input. Empty otherwise.")
 
