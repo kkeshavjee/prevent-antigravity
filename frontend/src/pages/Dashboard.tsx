@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Loader2 } from 'lucide-react';
 import { MotivationModule } from "@/components/motivation/MotivationModule";
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -107,6 +107,16 @@ export default function Dashboard() {
                     }}
                     onClose={() => setShowMotivationModule(false)}
                 />
+            </div>
+        );
+    }
+
+    if (isLoading && !patientProfile) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full bg-white dark:bg-gray-800 md:rounded-2xl md:shadow-lg">
+                <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
+                <h2 className="text-xl font-medium text-gray-900 dark:text-white">Connecting...</h2>
+                <p className="text-gray-500 dark:text-gray-400">Loading your health profile</p>
             </div>
         );
     }
