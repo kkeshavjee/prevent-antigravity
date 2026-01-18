@@ -31,8 +31,13 @@ export default function Chat() {
         try {
             const result = await api.chat(userId, userMsg);
             setMessages(prev => [...prev, { sender: 'ai', text: result.response }]);
-        } catch (error) {
-            setMessages(prev => [...prev, { sender: 'ai', text: "Sorry, I'm having trouble connecting to my brain right now." }]);
+        } catch (error: any) {
+            console.error("Chat API error:", error);
+            const errorMsg = error.response?.data?.detail || error.message || "Unknown error";
+            setMessages(prev => [...prev, {
+                sender: 'ai',
+                text: `Sorry, I'm having trouble connecting to my brain right now. (Error: ${errorMsg})`
+            }]);
         } finally {
             setIsLoading(false);
         }

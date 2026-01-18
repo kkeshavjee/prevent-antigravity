@@ -17,6 +17,15 @@ app.add_middleware(
 
 orchestrator = Orchestrator()
 
+@app.on_event("startup")
+async def startup_event():
+    import os
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if api_key:
+        print(f"Backend started. API Key found: {api_key[:4]}...{api_key[-4:]}")
+    else:
+        print("Backend started. WARNING: GOOGLE_API_KEY NOT FOUND!")
+
 @app.post("/api/chat", response_model=OrchestratorResponse)
 async def chat(request: OrchestratorRequest):
     try:
