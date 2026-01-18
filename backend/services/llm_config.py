@@ -18,10 +18,13 @@ def configure_dspy():
         return
 
     try:
-        # Configure Gemini using dspy.LM (DSPy 3.0+ compatible)
-        # We use 'google/gemini-1.5-flash' to be explicit about the provider
-        lm = dspy.LM(model='google/gemini-1.5-flash', api_key=api_key)
+        # Use 'gemini/gemini-flash-latest' which is verified to work with the current key.
+        model_name = 'gemini/gemini-flash-latest'
+        lm = dspy.LM(model=model_name, api_key=api_key)
         dspy.configure(lm=lm)
-        print("DSPy configured for Gemini (gemini-1.5-flash).")
+        print(f"DSPy configured for Gemini ({model_name}).")
     except Exception as e:
-        print(f"Error configuring Gemini: {e}")
+        error_msg = f"Error configuring Gemini: {e}"
+        print(error_msg)
+        # We don't raise here to prevent the whole app from crashing if LLM is down,
+        # but the orchestrator should handle the missing LM gracefully.
