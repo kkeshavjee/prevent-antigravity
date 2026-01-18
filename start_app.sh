@@ -97,6 +97,6 @@ else
 fi
 echo ""
 echo "Backend URL:  http://127.0.0.1:8000"
-echo "Frontend URL: http://localhost:5173"
+echo "Frontend URL: http://127.0.0.1:5173"
 echo "=========================================="
 echo ""

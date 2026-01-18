@@ -23,7 +23,13 @@ class IntakeAgent(BaseAgent):
         history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-5:]])
 
         # Call Gemini via DSPy
+        print(f"IntakeAgent: Calling LLM with input '{user_input}'...")
         result = self.predictor(history=history_str, user_input=user_input, user_profile=profile_json)
+        print(f"IntakeAgent: LLM returned. Result: {result}")
+        
+        if not result.response:
+            print("IntakeAgent WARNING: LLM returned empty response!")
+            result.response = "I'm sorry, I couldn't process that. Could you say that again?"
         
         updated_context = {}
         if result.extracted_name:

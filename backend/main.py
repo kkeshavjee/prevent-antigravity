@@ -39,10 +39,14 @@ async def chat(request: OrchestratorRequest):
             suggested_actions=[] # TODO: Add actions support
         )
     except Exception as e:
-        print(f"Chat error: {str(e)}")
         import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        full_trace = traceback.format_exc()
+        error_type = type(e).__name__
+        error_msg = str(e) or "No message"
+        print(f"\n--- CHAT ERROR ---\nType: {error_type}\nMessage: {error_msg}\n{full_trace}\n-------------------")
+        # Ensure detail is a string to avoid "Error: None" or similar serializations
+        detail_msg = f"{error_type}: {error_msg}"
+        raise HTTPException(status_code=500, detail=detail_msg)
 
 from backend.services.data_loader import DataLoader
 import os

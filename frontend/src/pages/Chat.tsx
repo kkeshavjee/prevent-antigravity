@@ -7,9 +7,9 @@ export default function Chat() {
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [userId, setUserId] = useState(() => `user_${Math.floor(Math.random() * 1000)}`);
     const chatEndRef = useRef<HTMLDivElement>(null);
     const userName = localStorage.getItem('userName') || 'Guest';
-    const userId = "user_123"; // Mock user ID for now
 
     const scrollToBottom = () => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }
     useEffect(scrollToBottom, [messages]);
@@ -17,7 +17,7 @@ export default function Chat() {
     // Initial greeting
     useEffect(() => {
         if (messages.length === 0) {
-            setMessages([{ sender: 'ai', text: `Hello ${userName}! I'm Dawn. How can I help you today?` }]);
+            setMessages([{ sender: 'ai', text: "Hello! I'm Dawn, your Diabetes Prevention Assistant. To get started, please tell me your name or simply say 'hello'!" }]);
         }
     }, []);
 
@@ -49,7 +49,20 @@ export default function Chat() {
                 <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
                     <Apple className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <div><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Dawn</h2><p className="text-sm text-green-500">Online</p></div>
+                <div className="flex-1">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Dawn</h2>
+                    <div className="flex items-center space-x-2">
+                        <span className="text-xs text-green-500">Online</span>
+                        <span className="text-[10px] text-gray-400">| ID: </span>
+                        <input
+                            type="text"
+                            value={userId}
+                            onChange={(e) => setUserId(e.target.value)}
+                            className="text-[10px] text-gray-400 bg-transparent border-none focus:ring-0 p-0 w-20"
+                            title="Click to edit User ID for testing (e.g. 1001)"
+                        />
+                    </div>
+                </div>
                 <button
                     onClick={async () => {
                         try {
