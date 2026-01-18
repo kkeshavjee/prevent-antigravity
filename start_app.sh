@@ -78,7 +78,7 @@ run_in_new_terminal() {
 }
 
 echo "Starting Backend..."
-run_in_new_terminal "Antigravity Backend" "source backend/venv/bin/activate && cd backend && uvicorn main:app --reload --host 127.0.0.1 --port 8000"
+run_in_new_terminal "Antigravity Backend" "source backend/venv/bin/activate && python3 -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000"
 
 # Wait a moment for backend to initialize
 sleep 2

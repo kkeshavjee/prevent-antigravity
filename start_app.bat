@@ -54,7 +54,7 @@ echo [3/3] Starting Application...
 
 :: Backend
 echo Starting Backend in a new window...
-start "Antigravity Backend" cmd /k "cd backend && ..\backend\venv\Scripts\activate && uvicorn main:app --reload --host 127.0.0.1 --port 8000"
+start "Antigravity Backend" cmd /k "backend\venv\Scripts\activate && python -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000"
 
 :: Wait a moment for backend to initialize
 timeout /t 2 /nobreak >nul
