@@ -39,6 +39,9 @@ async def chat(request: OrchestratorRequest):
             suggested_actions=[] # TODO: Add actions support
         )
     except Exception as e:
+        print(f"Chat error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 from backend.services.data_loader import DataLoader

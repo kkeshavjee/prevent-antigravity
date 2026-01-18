@@ -78,7 +78,7 @@ run_in_new_terminal() {
 }
 
 echo "Starting Backend..."
-run_in_new_terminal "Antigravity Backend" "source backend/venv/bin/activate && cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+run_in_new_terminal "Antigravity Backend" "source backend/venv/bin/activate && cd backend && uvicorn main:app --reload --host 127.0.0.1 --port 8000"
 
 # Wait a moment for backend to initialize
 sleep 2
@@ -96,7 +96,7 @@ else
     echo "Check terminal windows or background processes for logs."
 fi
 echo ""
-echo "Backend URL:  http://localhost:8000"
+echo "Backend URL:  http://127.0.0.1:8000"
 echo "Frontend URL: http://localhost:5173"
 echo "=========================================="
 echo ""
