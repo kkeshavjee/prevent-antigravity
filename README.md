@@ -44,9 +44,17 @@ Double-click `start_app.bat`. This will:
 
 #### macOS / Linux
 1.  Open Terminal.
-2.  Make the script executable: `chmod +x start_app.sh`
+2.  Make the scripts executable: `chmod +x start_app.sh stop_app.sh`
 3.  Run the script: `./start_app.sh`
     - This performs the same setup steps as the Windows version and opens new Terminal windows for the services on macOS.
+
+### Stopping the Application
+
+#### Windows
+Run `stop_app.bat` to shut down the backend and frontend processes.
+
+#### macOS / Linux
+Run `./stop_app.sh` in the terminal to stop the processes.
 
 ### Manual Installation
 

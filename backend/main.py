@@ -25,11 +25,10 @@ orchestrator = Orchestrator()
 @app.on_event("startup")
 async def startup_event():
     import os
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if api_key:
-        print(f"Backend started. API Key found: {api_key[:4]}...{api_key[-4:]}")
-    else:
+    if not os.getenv("GOOGLE_API_KEY"):
         print("Backend started. WARNING: GOOGLE_API_KEY NOT FOUND!")
+    else:
+        print("Backend started. Brain connectivity enabled.")
 
 @app.post("/api/chat", response_model=OrchestratorResponse)
 async def chat(request: OrchestratorRequest):

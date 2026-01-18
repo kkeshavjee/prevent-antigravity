@@ -50,20 +50,6 @@ export default function Chat() {
                     <Apple className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div><h2 className="text-lg font-semibold text-gray-900 dark:text-white">Dawn</h2><p className="text-sm text-green-500">Online</p></div>
-                <button
-                    onClick={async () => {
-                        try {
-                            const res = await fetch('http://localhost:8000/health');
-                            const data = await res.json();
-                            alert(`Connection Success: ${JSON.stringify(data)}`);
-                        } catch (e: any) {
-                            alert(`Connection Failed: ${e.message}`);
-                        }
-                    }}
-                    className="ml-auto text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-gray-500"
-                >
-                    Test Connection
-                </button>
             </div>
 
             <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto">
