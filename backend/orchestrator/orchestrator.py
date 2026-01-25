@@ -10,15 +10,17 @@ from backend.services.llm_config import configure_dspy
 import os
 
 from backend.services.persistence import AsyncPersistence
+from backend.mcp_server.mcp_server import MCPServer
 
 class Orchestrator:
     def __init__(self):
         configure_dspy() # Initialize Gemini
+        self.mcp_server = MCPServer()
         self.agents = {
-            "intake": IntakeAgent(),
-            "motivation": MotivationAgent(),
-            "education": EducationAgent(),
-            "coaching": CoachingAgent()
+            "intake": IntakeAgent(self.mcp_server),
+            "motivation": MotivationAgent(self.mcp_server),
+            "education": EducationAgent(self.mcp_server),
+            "coaching": CoachingAgent(self.mcp_server)
         }
         self.states: Dict[str, AgentState] = {}
         self.persistence = AsyncPersistence()  

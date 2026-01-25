@@ -67,6 +67,9 @@ To prevent "tracking fatigue," we utilize **Ecological Momentary Assessment (EMA
 ### 4.5. Accessibility & Literacy Optimization
 Designs must account for varying levels of health literacy and numeracy. High-level clinical metrics (e.g., HbA1c, Risk Scores) must be accompanied by plain-language interpretations to ensure the tool provides equal value across all demographic segments.
 
+### 4.6. Privacy by Design: Pseudonymity
+To maximize patient security and privacy, the bot operates on a **pseudonymized baseline**. No real names or contact information are ingested from external sources (e.g., OHN). Users are identified by a unique, anonymous ID (PREVENT_ID), and choose their own nickname for conversational interaction within the app.
+
 ## 5. User Journey & Core Features
 
 The patient journey through the Diabetes Prevention Bot aligns with the 6 stages of the PREVENT Patient Journey [cite: 185] and incorporates behavior change theories like the Transtheoretical Model (TTM) of Stages of Change (SOC) [cite: 780, 801, 1622] and Self-Determination Theory (SDT)[cite: 7, 168, 1367].
@@ -77,7 +80,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
 * **Bot Feature:**
 
-    * **Patient Data Ingestion:** The bot's backend (orchestrated by the central Orchestrator component) receives structured patient data, LSTM predictions, and decision tree pathway information for approved patients.
+    * **Patient Data Ingestion:** The bot's backend (orchestrated by the central Orchestrator component) receives structured clinical data (biomarkers), LSTM predictions, and decision tree pathway information for approved patients. **IMPORTANT:** This data is linked only via a unique identifier; no names or contact information are transferred to the bot's database from external sources.
 
     * **Risk Interpretation:** Internally, the bot uses `InterpretPredictiveOutputSignature` to translate complex model outputs into patient-friendly risk levels, pathway summaries, and key contributory lifestyle factors.
 

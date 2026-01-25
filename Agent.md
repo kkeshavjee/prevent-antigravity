@@ -2,6 +2,16 @@
 
 This document serves as a persistent memory for the AI agent to store learnings, architectural decisions, and common pitfalls encountered during the development of **Antigravity**.
 
+## Foundation Phase: Lessons Learned (Issues #6 & #3)
+- **Architectural Decoupling**: 
+    - **State Machine**: Flow logic belongs in a dedicated model (`state_machine.py`), not the Orchestrator. This makes logic testable and prevents "AI progress hallucinations."
+    - **MCP Server**: Context management is a system-level concern. Centralizing it in `mcp_server.py` reduces agent complexity and ensures a "Single Source of Truth."
+- **Reliability principle**: Designing for failure (exponential backoff/retries) is as critical as designing for success.
+- **Production Mindset**: 
+    - **Pseudonymity**: The app operates on a "Zero-external-PII" baseline. No real names or contact info are ingested. Identification relies on anonymous IDs and user-chosen nicknames.
+    - **Observability**: Always track latency for external calls (LLMs/Databases).
+    - **Guardrails**: Validate AI output "shape" against strictly defined Signatures before processing.
+
 ## 0. Prime Directive: Task Decoupled Planning
 **Protocol:** [docs/process/TDP_DEV_PROTOCOL.md](file:///c:/Users/Karim%20Keshavjee/Documents/Antigravity/docs/process/TDP_DEV_PROTOCOL.md)
 *   **Isolate Context:** Do not rely on deep chat history. Use `active_context.md`.
@@ -72,3 +82,18 @@ These commands are stored here for the Agent to execute upon request.
     ```bash
     curl.exe -X POST "http://127.0.0.1:8000/api/config/key" -H "Content-Type: application/json" -d "{ \"key_type\": \"primary\" }"
     ```
+
+## 6. Patient Journey State Machine
+- **Role**: Externalizes the flow logic from the Orchestrator. 
+- **Implementation**: `backend/models/state_machine.py`.
+- **Constraint**: All state transitions *must* pass through `JourneyManager.transition()`.
+- **Principle**: The bot cannot "hallucinate" progress. If a move is illegal (e.g., from Inform to Sustain), the code blocks it and raises an `InvalidStateTransitionError`.
+
+## 7. MCP Server (Model Context Protocol)
+- **Role**: A centralized gateway for all LLM calls.
+- **Implementation**: `backend/mcp_server/mcp_server.py`.
+- **Key Features**:
+    - **Context Injection**: Automatically injects `PatientProfile` and `history` into every call.
+    - **Resilience**: Uses `tenacity` for exponential backoff (retries) on API failure or rate limits (429).
+    - **Observability**: Logs latency for every request to monitor system health.
+- **Signature Support**: Supports mapping `user_profile`, `user_context`, and `history` fields automatically.

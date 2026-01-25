@@ -48,4 +48,5 @@ We follow the **TDP Protocol** to ensure reliability.
 As a digital health intervention, **privacy and security are non-negotiable**.
 - Adhere to PHIPA/PIPEDA guidelines where applicable.
 - Never commit sensitive data (API keys, patient records) to version control.
+- **Pseudonymity Rule**: Do not design features that require or ingest real names, emails, or phone numbers from external health networks (OHN). Use the `PREVENT_ID` and user-provided nicknames only.
 - Ensure all new API endpoints are protected by appropriate authorization.

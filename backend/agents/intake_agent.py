@@ -1,12 +1,11 @@
 from backend.agents.base_agent import BaseAgent
 from backend.models.data_models import AgentState
 from backend.models.signatures import IntakeSignature
-import dspy
-import json
+from backend.mcp_server.mcp_server import MCPServer
 
 class IntakeAgent(BaseAgent):
-    def __init__(self):
-        self.predictor = dspy.Predict(IntakeSignature)
+    def __init__(self, mcp_server: MCPServer):
+        super().__init__(mcp_server)
 
     async def process(self, user_input: str, state: AgentState) -> dict:
         # Debug logging
@@ -20,15 +19,9 @@ class IntakeAgent(BaseAgent):
                 "next_agent": "motivation"
             }
         
-        # Serialize profile for the LLM
-        profile_json = state.patient_profile.json()
-        
-        # Format history (last 5 turns is enough for intake)
-        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-5:]])
-
-        # Call Gemini via DSPy
-        print(f"IntakeAgent: Calling LLM with input '{user_input}'...")
-        result = self.predictor(history=history_str, user_input=user_input, user_profile=profile_json)
+        # Call Gemini via MCP Server (handles history and profile injection)
+        print(f"IntakeAgent: Calling LLM via MCP with input '{user_input}'...")
+        result = self.mcp_server.predict(IntakeSignature, state, user_input=user_input)
         print(f"IntakeAgent: LLM returned. Result: {result}")
         
         if not result.response:

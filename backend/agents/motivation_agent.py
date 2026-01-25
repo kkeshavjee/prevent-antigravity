@@ -1,18 +1,15 @@
 from backend.agents.base_agent import BaseAgent
 from backend.models.data_models import AgentState
 from backend.models.signatures import MotivationSignature
-import dspy
+from backend.mcp_server.mcp_server import MCPServer
 
 class MotivationAgent(BaseAgent):
-    def __init__(self):
-        self.predictor = dspy.Predict(MotivationSignature)
+    def __init__(self, mcp_server: MCPServer):
+        super().__init__(mcp_server)
 
     async def process(self, user_input: str, state: AgentState) -> dict:
-        # Format history (increased window to 10 for better context)
-        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-10:]])
-        
-        # Call Gemini via DSPy
-        result = self.predictor(history=history_str, user_input=user_input)
+        # Call Gemini via MCP Server (handles history and profile injection)
+        result = self.mcp_server.predict(MotivationSignature, state, user_input=user_input)
         
         updated_context = {}
         if result.readiness_score and float(result.readiness_score) > 0:

@@ -4,13 +4,20 @@
 > **Purpose:** Tracking all project tasks and their dependencies.
 > **Rule:** Select "leaf nodes" (tasks with no un-met dependencies) for execution.
 
-## Active Feature: Refactor Project Structure
-*   [ ] **Analyze & Plan Reorganization**
-    *   [ ] Map current structure
-    *   [ ] Design target structure (Standard Monorepo)
+## Active Feature: Integration Tests
+*   [/] **Plan & Design**
+    *   [x] Select Task & Create Branch
+    *   [ ] Read PRD Testing Requirements
     *   [ ] Create `implementation_plan.md`
+*   [ ] **Implementation**
+    *   [ ] Create `tests/integration/`
+    *   [ ] Implement End-to-End API tests
 
 ## Completed Features
+*   [x] **Integrate MCP Server**: [Issue #3](https://github.com/kkeshavjee/prevent-antigravity/issues/3)
+*   [x] **State Machine**: [Issue #6](https://github.com/kkeshavjee/prevent-antigravity/issues/6)
+*   [x] **State Machine**: [Issue #6](https://github.com/kkeshavjee/prevent-antigravity/issues/6) - Define Patient Journey states.
+*   [x] **Refactor Project Structure**
 *   [x] **Task Decoupled Planning (TDP)**
     *   [x] Protocol Definition & Verification
     *   [x] Supervisor Graph Published
@@ -67,6 +74,9 @@
 *   [ ] **The Receipt**: [Issue #10](https://github.com/kkeshavjee/prevent-antigravity/issues/10) - Audit trail.
 *   [ ] **The Bouncer**: [Issue #11](https://github.com/kkeshavjee/prevent-antigravity/issues/11) - Safety guardrail.
 *   [ ] **The Fix Button**: [Issue #12](https://github.com/kkeshavjee/prevent-antigravity/issues/12) - User-driven correction.
+*   [ ] **Privacy Scrubbing**: [MCP-PH-1] Ensure no PII is sent to cloud LLM.
+*   [ ] **Audit Trail (The Receipt)**: [MCP-AT-1] Permanent record of all AI interactions.
+*   [ ] **Observability Dashboard**: [Issue #16] Real-time visualization of system health, latency, and agent states.
 
 ### Phase 6: Clinical Validation
 *   *Depends on: Phase 4 (Expansion)*
