@@ -36,7 +36,7 @@ This document serves as a persistent memory for the AI agent to store learnings,
 ## 3. Development Workflow
 - **Verification**: Always verify backend changes with a standalone script (e.g., `test_backend_full.py`) independent of the frontend to isolate issues.
 - **Logs**: Backend logs (`uvicorn`) are the source of truth for 500 errors. Always check them first.
-- **Documentation Persistence**: Important architectural plans (e.g., Task Decoupled Planning) and decisions must be saved in this `Agent.md` file or clearly referenced in `project_tasks.md` to prevent loss. Do not rely on ephemeral chat history.
+- **Documentation Persistence**: Important architectural plans (e.g., Task Decoupled Planning) and decisions must be saved in this `Agent.md` file or clearly referenced in `docs/ROADMAP.md` to prevent loss. Do not rely on ephemeral chat history.
 
 ## 4. Session Context Management
 - **The Context Gap**: Without a persistent context file, the agent loses track of "where we left off" between sessions, leading to redundant explanations or loss of architectural intent.
@@ -45,10 +45,15 @@ This document serves as a persistent memory for the AI agent to store learnings,
         - **Shutdown**: Assistant summarizes state into `active_context.md` (overwriting it).
         - **Startup**: Assistant reads `active_context.md` to prime its context window.
     - **Repo Hygiene**: This file is `.gitignore`'d to prevent constant churn in the git history. Only the *template* and *workflow guide* should be committed.
+- **4.3. Session Recovery Pitfalls**:
+    - **Gitignore Tool Block**: Standard file-viewing tools (`view_file`) respect `.gitignore`. If `active_context.md` is ignored, the agent *cannot* read it with standard tools. 
+        - **Resolution**: Use `run_command` (`type` or `Get-Content`) to read ignored context files.
+    - **Atomic Housekeeping**: "Deleting" a file in a conversation is not the same as deleting it on disk. If a session ends abruptly, housekeeping tasks (like removing `project_tasks.md`) might be lost.
+        - **Resolution**: Always verify filesystem state at the start of a session, regardless of what the chat history or `ROADMAP.md` claims.
 
-## 4. Troubleshooting Guides
+## 5. Troubleshooting Guides
 
-### 4.1. Network Error Diagnosis Tree
+### 5.1. Network Error Diagnosis Tree
 If you see "Error: Network Error" in the chat, follow this flow:
 
 ```mermaid

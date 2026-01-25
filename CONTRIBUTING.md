@@ -39,7 +39,7 @@ We follow the **TDP Protocol** to ensure reliability.
 - **Supervisor Graph**: Use `docs/ROADMAP.md` to track dependencies and select the next task.
 - **Session Continuity**: Use `docs/active_context.md` to save/restore context. See [Session Workflow](docs/guides/SESSION_WORKFLOW.md).
     - **Note**: Do not commit the populated `active_context.md` file. It is local-only and ignored by git to keep the repo clean.
-- **Project Tasks**: See the shared `project_tasks.md` file for a project‑wide task board.
+- **Project Tasks**: See the `docs/ROADMAP.md` file for a project‑wide task board.
 - **Specifications**: High-level vision lives in the PRD. Granular technical discussions happen within GitHub Issues.
 - **Reviews**: All code must be reviewed via Pull Request before merging to `main`.
 
