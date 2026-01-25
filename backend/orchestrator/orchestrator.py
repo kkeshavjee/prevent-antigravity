@@ -9,6 +9,8 @@ from backend.services.data_loader import DataLoader
 from backend.services.llm_config import configure_dspy
 import os
 
+from backend.services.persistence import AsyncPersistence
+
 class Orchestrator:
     def __init__(self):
         configure_dspy() # Initialize Gemini
@@ -19,9 +21,13 @@ class Orchestrator:
             "coaching": CoachingAgent()
         }
         self.states: Dict[str, AgentState] = {}
+        self.persistence = AsyncPersistence()  
+        # Note: self.persistence.init_db() needs to be awaited, can't be in __init__
+        # We will check table existence on first access or use a startup event in main.py
         
         # Initialize Data Loader
-        data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "PREVENT_Inform_Table_V2 (2).xlsx")
+        # Data is now in backend/data/
+        data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "PREVENT_Inform_Table_V2 (2).xlsx")
         print(f"Orchestrator: Loading database from {data_path}...")
         self.data_loader = DataLoader(data_path)
         self.user_database = self.data_loader.load_data()
@@ -35,30 +41,43 @@ class Orchestrator:
             print("Orchestrator WARNING: Database is empty!")
 
     async def get_or_create_state(self, user_id: str) -> AgentState:
-        if user_id not in self.states:
-            # Check if user exists in loaded database
-            if user_id in self.user_database:
-                profile = self.user_database[user_id]
-            else:
-                # Fallback for unknown users
-                profile = PatientProfile(
-                    user_id=user_id,
-                    name="",
-                    age=0,
-                    diabetes_risk_score=RiskLevel.MODERATE,
-                    risk_score_numeric=45,
-                    biomarkers=Biomarkers(
-                        a1c=5.7, fbs=5.5, systolic_bp=120, diastolic_bp=80, 
-                        ldl=3.0, hdl=1.2, total_cholesterol=4.5, weight=70, height=170
-                    )
+        # P1: Try to load from persistent DB
+        persisted_state = await self.persistence.load_state(user_id)
+        if persisted_state:
+            self.states[user_id] = persisted_state
+            return persisted_state
+
+        # P2: If in-memory (fallback), return it
+        if user_id in self.states:
+             return self.states[user_id]
+
+        # P3: Create New (and persist it immediately)
+        # Check if user exists in loaded database (Excel)
+        if user_id in self.user_database:
+            profile = self.user_database[user_id]
+        else:
+            # Fallback for unknown users
+            profile = PatientProfile(
+                user_id=user_id,
+                name="",
+                age=0,
+                diabetes_risk_score=RiskLevel.MODERATE,
+                risk_score_numeric=45,
+                biomarkers=Biomarkers(
+                    a1c=5.7, fbs=5.5, systolic_bp=120, diastolic_bp=80, 
+                    ldl=3.0, hdl=1.2, total_cholesterol=4.5, weight=70, height=170
                 )
-            
-            self.states[user_id] = AgentState(
-                current_agent="intake",
-                conversation_history=[],
-                patient_profile=profile
             )
-        return self.states[user_id]
+        
+        new_state = AgentState(
+            current_agent="intake",
+            conversation_history=[],
+            patient_profile=profile
+        )
+        
+        self.states[user_id] = new_state
+        await self.persistence.save_state(user_id, new_state)
+        return new_state
 
     async def process_request(self, user_id: str, user_input: str) -> Dict:
         state = await self.get_or_create_state(user_id)
@@ -83,6 +102,9 @@ class Orchestrator:
         if "next_agent" in result:
             state.current_agent = result["next_agent"]
             
+        # Save state to DB
+        await self.persistence.save_state(user_id, state)
+        
         return {
             "response": response_text,
             "current_agent": state.current_agent

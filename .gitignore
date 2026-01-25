@@ -24,3 +24,6 @@ frontend/yarn-error.log*
 
 # OS specific
 Thumbs.db
+
+# Documentation / Local Context
+docs/active_context.md

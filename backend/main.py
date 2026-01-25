@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from backend.orchestrator.orchestrator import Orchestrator
-from backend.models.data_models import OrchestratorRequest, OrchestratorResponse
+from backend.models.data_models import OrchestratorRequest, OrchestratorResponse, PatientProfile
 
 app = FastAPI()
 
@@ -29,13 +29,74 @@ async def startup_event():
         print("Backend started. WARNING: GOOGLE_API_KEY NOT FOUND!")
     else:
         print("Backend started. Brain connectivity enabled.")
+    
+    # Initialize Database
+    await orchestrator.persistence.init_db()
+    print("Backend: Persistence database initialized.")
+
+# --- System Configuration Endpoints ---
+
+class KeyConfigRequest(BaseModel):
+    key_type: str  # "primary", "secondary", or "custom"
+    custom_key: str = None
+
+from backend.services.llm_config import configure_dspy
+
+@app.post("/api/config/key")
+async def switch_api_key(config: KeyConfigRequest):
+    """
+    Switch the active Google API Key at runtime.
+    """
+    new_key = None
+    
+    if config.key_type == "primary":
+        import os
+        new_key = os.getenv("GOOGLE_API_KEY")
+        if not new_key:
+            raise HTTPException(status_code=400, detail="Primary key (GOOGLE_API_KEY) not found in environment.")
+            
+    elif config.key_type == "secondary":
+        import os
+        new_key = os.getenv("GOOGLE_API_KEY_2")
+        if not new_key:
+            raise HTTPException(status_code=400, detail="Secondary key (GOOGLE_API_KEY_2) not found in environment.")
+            
+    elif config.key_type == "custom":
+        if not config.custom_key:
+             raise HTTPException(status_code=400, detail="Custom key must be provided when type is 'custom'.")
+        new_key = config.custom_key
+        
+    else:
+        raise HTTPException(status_code=400, detail="Invalid key_type. Must be 'primary', 'secondary', or 'custom'.")
+
+    # Re-configure DSPy with the new key
+    configure_dspy(api_key=new_key)
+    
+    return {"status": "success", "message": f"Switched to {config.key_type} key."}
+
+# --- Chat Endpoints ---
 
 @app.post("/api/chat", response_model=OrchestratorResponse)
 async def chat(request: OrchestratorRequest):
     try:
         result = await orchestrator.process_request(request.user_id, request.user_input)
+        
+        # Robustly handle the response content
+        raw_response = result.get("response")
+        final_response = "I apologize, I'm having trouble formulating a response right now."
+        
+        if isinstance(raw_response, str):
+            final_response = raw_response
+        elif raw_response and hasattr(raw_response, 'response') and isinstance(raw_response.response, str):
+            # Handle case where dspy returns a Prediction object nested or similar
+            final_response = raw_response.response
+        else:
+            # Fallback: Stringify the object but log a warning
+            print(f"Backend WARNING: Non-string response received: {type(raw_response)}. Attempting to stringify.")
+            final_response = str(raw_response)
+
         return OrchestratorResponse(
-            response=result["response"],
+            response=final_response,
             suggested_actions=[] # TODO: Add actions support
         )
     except Exception as e:
@@ -44,6 +105,12 @@ async def chat(request: OrchestratorRequest):
         error_type = type(e).__name__
         error_msg = str(e) or "No message"
         print(f"\n--- CHAT ERROR ---\nType: {error_type}\nMessage: {error_msg}\n{full_trace}\n-------------------")
+        
+        # Friendly error handling for Rate Limits
+        if "429" in error_msg or "RateLimitError" in error_type or "Quota exceeded" in error_msg:
+            detail_msg = "I'm currently experiencing high traffic (Rate Limit Exceeded). Please try again in a minute."
+            raise HTTPException(status_code=429, detail=detail_msg)
+            
         # Ensure detail is a string to avoid "Error: None" or similar serializations
         detail_msg = f"{error_type}: {error_msg}"
         raise HTTPException(status_code=500, detail=detail_msg)
@@ -53,16 +120,14 @@ import os
 
 # Initialize data loader (assuming file is in data/ or root)
 # Adjust path as necessary. For now, using a relative path assuming execution from root
+# Adjust path as necessary. Now in backend/data/
+# Using absolute path logic similar to orchestrator or relative to this file
 data_path = os.path.join(os.path.dirname(__file__), "data", "PREVENT_Inform_Table_V2 (2).xlsx")
-# If data is in root documents, use absolute path or config
-# Based on file listing, the excel is in "c:\Users\Karim Keshavjee\Documents\Antigravity\PREVENT_Inform_Table_V2 (2).xlsx"
-# We should probably pass the correct path.
-# Let's try to locate it relative to backend or hardcode for this user env since we know it.
-EXCEL_PATH = r"c:\Users\Karim Keshavjee\Documents\Antigravity\PREVENT_Inform_Table_V2 (2).xlsx"
+# Fallback hardcoded if needed, but relative is safer now
+EXCEL_PATH = data_path 
 data_loader = DataLoader(EXCEL_PATH)
 
-@app.get("/api/patient/lookup", response_model=OrchestratorResponse) # Using OrchestratorResponse for consistency? No, should return PatientProfile or subset.
-# Let's create a wrapper or return PatientProfile directly.
+@app.get("/api/patient/lookup", response_model=PatientProfile)
 async def lookup_patient(name: str):
     profile = data_loader.get_patient_by_name(name)
     if not profile:

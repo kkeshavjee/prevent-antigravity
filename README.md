@@ -86,6 +86,18 @@ Run `./stop_app.sh` in the terminal to stop the processes.
     ```bash
     python main.py
     ```
+    
+    #### Multiple API Keys (Runtime Switching)
+    You can configure a secondary key for testing or quota management:
+    1.  Add `GOOGLE_API_KEY_2=your_second_key` to your `.env` file.
+    2.  Switch keys at runtime (no restart needed) via API:
+        ```bash
+        # Switch to Secondary
+        curl -X POST "http://localhost:8000/api/config/key" -H "Content-Type: application/json" -d "{\"key_type\": \"secondary\"}"
+        
+        # Switch to Primary
+        curl -X POST "http://localhost:8000/api/config/key" -H "Content-Type: application/json" -d "{\"key_type\": \"primary\"}"
+        ```
 
 ## Development History
 - **v1.0**: Initial Release with Readiness Assessment, Dashboard, and basic Chat.
@@ -94,3 +106,6 @@ Run `./stop_app.sh` in the terminal to stop the processes.
     - Added global bottom navigation.
     - Implemented Patient Lookup and Profile Persistence.
     - Fixed UI/UX issues (scrolling, button overlaps).
+
+## Contributing
+We use the **Task Decoupled Planning (TDP)** methodology for all development. Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) and the [TDP Protocol](docs/process/TDP_DEV_PROTOCOL.md) before submitting PRs.

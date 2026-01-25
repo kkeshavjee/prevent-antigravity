@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from enum import Enum
+from backend.models.state_machine import PatientStage
 
 class RiskLevel(str, Enum):
     LOW = "Low"
@@ -27,6 +28,7 @@ class PatientProfile(BaseModel):
     biomarkers: Biomarkers
     psychographics: Dict[str, Any] = {}
     motivation_level: str = "Unknown" # Precontemplation, Contemplation, etc.
+    current_stage: PatientStage = PatientStage.EDUCATE_MOTIVATE # Default for new users
     physician_name: Optional[str] = "Dr. Smith"
 
 class Message(BaseModel):

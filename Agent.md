@@ -1,0 +1,74 @@
+# Agent Knowledge Base (`Agent.md`)
+
+This document serves as a persistent memory for the AI agent to store learnings, architectural decisions, and common pitfalls encountered during the development of **Antigravity**.
+
+## 0. Prime Directive: Task Decoupled Planning
+**Protocol:** [docs/process/TDP_DEV_PROTOCOL.md](file:///c:/Users/Karim%20Keshavjee/Documents/Antigravity/docs/process/TDP_DEV_PROTOCOL.md)
+*   **Isolate Context:** Do not rely on deep chat history. Use `active_context.md`.
+*   **Plan First:** Never write code without an `implementation_plan.md` for the specific task node.
+*   **Local Repair:** If execution fails, fix it within the scope of the current node. Do not hallucinate global changes.
+
+## 1. Backend Architecture & Stability
+- **Response Handling**: The backend `chat` endpoint must *always* defensively handle the response from the Orchestrator/Agents. `dspy` or the underlying LLM can sometimes return complex objects (like `Prediction` or streaming chunks) instead of plain strings.
+    - **Fix**: Logic was added to `backend/main.py` to check types and explicitly convert non-string responses to strings before returning to the frontend.
+- **Model Selection & Rate Limits**: 
+    - The `gemini-2.5-flash` (and `2.0` variants like `lite`, `exp`) have very strict free tier quotas (often 10-20 requests/day or low token limits).
+    - **Learnings**: 
+        - `gemini-1.5-flash` (or `gemini-1.5-flash-latest`) is often more stable for free tiers, but finding the exact string identifier is critical to avoid 404s.
+    - **Solution**: Experiment to find the stable legacy model string (e.g., `gemini-1.5-flash-latest`).
+    - **Error Handling**: The backend should catch `429` errors and return a user-friendly "System is busy" message rather than crashing or showing a 500 error.
+- **Data Models**: 
+    - Endpoints like `/api/patient/lookup` must return the data model expected by the frontend (e.g., `PatientProfile`), not the generic `OrchestratorResponse`. Mismatches cause 500 errors.
+
+## 2. Frontend Patterns
+- **API Error Handling**: The frontend `Chat.tsx` handles API errors by displaying them as "System Messages" in the chat. This is good for debugging but should be made more user-friendly for production (e.g., "The assistant is momentarily unavailable").
+
+## 3. Development Workflow
+- **Verification**: Always verify backend changes with a standalone script (e.g., `test_backend_full.py`) independent of the frontend to isolate issues.
+- **Logs**: Backend logs (`uvicorn`) are the source of truth for 500 errors. Always check them first.
+- **Documentation Persistence**: Important architectural plans (e.g., Task Decoupled Planning) and decisions must be saved in this `Agent.md` file or clearly referenced in `project_tasks.md` to prevent loss. Do not rely on ephemeral chat history.
+
+## 4. Session Context Management
+- **The Context Gap**: Without a persistent context file, the agent loses track of "where we left off" between sessions, leading to redundant explanations or loss of architectural intent.
+- **The Solution**: Use `docs/active_context.md` as a volatile but persistent memory slot.
+    - **Workflow**: 
+        - **Shutdown**: Assistant summarizes state into `active_context.md` (overwriting it).
+        - **Startup**: Assistant reads `active_context.md` to prime its context window.
+    - **Repo Hygiene**: This file is `.gitignore`'d to prevent constant churn in the git history. Only the *template* and *workflow guide* should be committed.
+
+## 4. Troubleshooting Guides
+
+### 4.1. Network Error Diagnosis Tree
+If you see "Error: Network Error" in the chat, follow this flow:
+
+```mermaid
+graph TD
+    A[Error: Network Error] --> B{Is Vite Proxy Configured?}
+    B -- No --> C[CRITICAL: Enable Proxy in vite.config.ts]
+    B -- Yes --> D{Is Backend Running?}
+    D -- No --> E[Start Backend via start_app.bat]
+    D -- Yes --> F{Is Error Constant?}
+    
+    F -- Intermittent --> G[Auto-Reload (Wait 5s)]
+    F -- Constant --> H{Check Console for CORS/IP Issues}
+    H --> I[Fix: Use Relative Paths in client.ts]
+```
+
+### 4.2. Root Cause & Solution Patterns
+1.  **The "Localhost" Trap**: Hardcoding `http://127.0.0.1:8000` in the frontend client fails on mobile devices...
+2.  **The Proxy Solution**: Always configure `vite.config.ts` to proxy `/api` requests...
+3.  **Auto-Reload**: While `uvicorn` reloads do cause momentary outages...
+4.  **Missing Dependencies**: If backend fails with `ModuleNotFoundError: No module named 'aiosqlite'`, it means `backend/requirements.txt` was updated but the venv is stale. Run `pip install -r backend/requirements.txt` (or specifically `pip install aiosqlite`).
+
+## 5. Operational Commands
+These commands are stored here for the Agent to execute upon request.
+
+### 5.1. API Key Switching
+*   **Switch to Secondary Key**:
+    ```bash
+    curl.exe -X POST "http://127.0.0.1:8000/api/config/key" -H "Content-Type: application/json" -d "{ \"key_type\": \"secondary\" }"
+    ```
+*   **Switch to Primary Key**:
+    ```bash
+    curl.exe -X POST "http://127.0.0.1:8000/api/config/key" -H "Content-Type: application/json" -d "{ \"key_type\": \"primary\" }"
+    ```

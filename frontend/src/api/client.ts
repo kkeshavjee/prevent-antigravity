@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // For mobile testing, replace 'localhost' with your computer's LAN IP (e.g., '192.168.1.100')
 // or use '10.0.2.2' for Android Emulator.
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// PROXY UPDATE: Using relative path to allow Vite proxy to handle routing
+const API_BASE_URL = '';
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,

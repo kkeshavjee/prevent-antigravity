@@ -147,100 +147,105 @@ export default function Dashboard() {
 
     // Main Dashboard View
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-800 md:rounded-2xl md:shadow-lg">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back, {patientProfile.name.split(' ')[0]}!</h1>
-                <p className="text-gray-600 dark:text-gray-400">Here's your health overview</p>
+        <div className="flex flex-col h-full bg-transparent overflow-hidden">
+            <div className="p-6 border-b border-white/10">
+                <h1 className="text-3xl font-extralight text-white tracking-widest uppercase mb-1">
+                    <span className="text-primary text-xs tracking-[0.8em] block mb-2">Health Overview</span>
+                    Welcome back, {patientProfile.name.split(' ')[0]}
+                </h1>
+                <p className="text-white/40 font-light text-sm tracking-wide">Illuminating your path to wellness</p>
                 {/* Removed top button */}
             </div>
-            <div className="flex-1 p-6 overflow-y-auto">
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Diabetes Risk Level</h2>
-                    <div className="flex flex-col items-center">
+            <div className="flex-1 p-6 overflow-y-auto space-y-8 pb-24">
+                <section>
+                    <h2 className="text-sm font-light uppercase tracking-[0.3em] text-white/60 mb-6">Diabetes Risk Level</h2>
+                    <div className="glass-card p-8 flex flex-col items-center">
                         <RiskSpeedometer riskLevel={patientProfile.risk_score_numeric || 50} />
-                        <p className="mt-4 text-lg font-semibold text-center">
-                            Risk Level: <span className={patientProfile.diabetes_risk_score === 'High' ? "text-red-600" : "text-yellow-600"}>
+                        <p className="mt-6 text-lg font-light tracking-wide text-center">
+                            Calculated Status: <span className={`font-normal ${patientProfile.diabetes_risk_score === 'High' ? "text-red-400" : "text-primary"}`}>
                                 {patientProfile.diabetes_risk_score}
                             </span>
                         </p>
                     </div>
-                </div>
-                <div>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Your Biomarkers</h2>
+                </section>
+
+                <section>
+                    <h2 className="text-sm font-light uppercase tracking-[0.3em] text-white/60 mb-6">Vital Biomarkers</h2>
                     <div className="grid grid-cols-2 gap-4">
                         <BiomarkerCard label="A1c" value={`${patientProfile.biomarkers.a1c}%`} status="high" />
                         <BiomarkerCard label="FBS" value={`${patientProfile.biomarkers.fbs} mmol/L`} status="high" />
                         <BiomarkerCard label="Weight" value={`${patientProfile.biomarkers.weight} kg`} status="neutral" />
                     </div>
-                </div>
+                </section>
 
-                {/* Readiness Button Moved to Bottom of Content */}
                 {/* Readiness Section */}
-                <div className="mt-8 pt-4 border-t">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Readiness Assessment</h2>
+                <section className="mt-8">
+                    <h2 className="text-sm font-light uppercase tracking-[0.3em] text-white/60 mb-6">Readiness for Change</h2>
 
                     {assessmentData ? (
-                        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800">
-                            <div className="flex items-center justify-between mb-4">
+                        <div className="glass-card p-6 border-primary/20">
+                            <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <p className="text-sm text-blue-600 dark:text-blue-300 font-medium uppercase tracking-wide">Current Stage</p>
-                                    <h3 className="text-2xl font-bold text-blue-900 dark:text-blue-100 capitalize">{assessmentData.stage}</h3>
+                                    <p className="text-[10px] text-primary font-medium uppercase tracking-[0.2em] mb-1">Current Discovery Stage</p>
+                                    <h3 className="text-2xl font-light text-white capitalize tracking-wide">{assessmentData.stage}</h3>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm text-gray-500">Last Updated</p>
-                                    <p className="font-medium">Today</p>
+                                    <p className="text-[10px] text-white/30 uppercase tracking-widest">Last Sync</p>
+                                    <p className="font-light text-sm text-white/60">Today</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mb-6">
-                                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                    <p className="text-xs text-gray-500">Importance</p>
-                                    <p className="text-xl font-bold text-blue-700 dark:text-blue-400">{assessmentData.importanceRating}/10</p>
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Importance</p>
+                                    <p className="text-2xl font-light text-primary">{assessmentData.importanceRating}<span className="text-sm text-white/20">/10</span></p>
                                 </div>
-                                <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                    <p className="text-xs text-gray-500">Confidence</p>
-                                    <p className="text-xl font-bold text-blue-700 dark:text-blue-400">{assessmentData.confidenceRating}/10</p>
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Confidence</p>
+                                    <p className="text-2xl font-light text-primary">{assessmentData.confidenceRating}<span className="text-sm text-white/20">/10</span></p>
                                 </div>
                             </div>
 
-                            <button onClick={() => setShowMotivationModule(true)} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border border-blue-200 text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
-                                <MessageCircle className="w-5 h-5" /> Update Assessment
+                            <button onClick={() => setShowMotivationModule(true)} className="dawn-button w-full">
+                                <MessageCircle className="w-4 h-4 mr-2 inline-block opacity-60" /> Update Assessment
                             </button>
                         </div>
                     ) : (
-                        <div>
-                            <button onClick={() => setShowMotivationModule(true)} className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
-                                <MessageCircle className="w-5 h-5" /> Start Readiness Assessment
+                        <div className="glass-card p-8 text-center bg-primary/5 border-primary/20">
+                            <button onClick={() => setShowMotivationModule(true)} className="dawn-button w-full mb-4">
+                                <MessageCircle className="w-4 h-4 mr-2 inline-block opacity-60" /> Begin Discovery
                             </button>
-                            <p className="text-center text-sm text-gray-500 mt-2">Check your readiness for change</p>
+                            <p className="text-[10px] text-white/30 uppercase tracking-widest">Analyze your readiness for change</p>
                         </div>
                     )}
-                </div>
+                </section>
             </div>
         </div>
     );
 }
 
-// Keeping Subcomponents...
-
-
 function RiskSpeedometer({ riskLevel }: { riskLevel: number }) {
-    // Simplified for brevity in this extraction, assumes SVG logic from previous View
     return (
-        <div className="relative w-48 h-32">
-            {/* SVG logic would go here, mimicking the original */}
-            <div className="text-center p-4 border rounded">Speedometer Placeholder ({riskLevel}%)</div>
+        <div className="relative w-48 h-32 flex items-center justify-center border border-white/5 rounded-xl bg-white/5">
+            <div className="text-center">
+                <div className="text-4xl font-extralight text-white">{riskLevel}<span className="text-sm opacity-30">%</span></div>
+                <div className="text-[10px] uppercase tracking-widest opacity-30 mt-1">Risk Factor</div>
+            </div>
         </div>
     )
 }
 
 function BiomarkerCard({ label, value, status }: any) {
-    let colorClass = 'text-gray-600 bg-gray-50';
-    if (status === 'high') colorClass = 'text-red-600 bg-red-50';
+    let statusColor = 'text-white/80';
+    let borderColor = 'border-white/10';
+    if (status === 'high') {
+        statusColor = 'text-red-400';
+        borderColor = 'border-red-500/20';
+    }
     return (
-        <div className={`p-4 rounded-lg ${colorClass}`}>
-            <div className="text-sm font-medium opacity-75">{label}</div>
-            <div className="text-lg font-bold">{value}</div>
+        <div className={`glass-card p-5 border ${borderColor}`}>
+            <div className="text-[10px] font-light uppercase tracking-widest text-white/30 mb-1">{label}</div>
+            <div className={`text-xl font-light tracking-wide ${statusColor}`}>{value}</div>
         </div>
     )
 }

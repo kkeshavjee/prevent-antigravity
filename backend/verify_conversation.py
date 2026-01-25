@@ -36,5 +36,13 @@ async def verify_conversation_context():
     else:
         print("NOTE: AI might not have explicitly mentioned the knee pain, check response quality manually.")
 
+    # Check for motivation context
+    print("\n--- Phase 4: Motivation Context Verification ---")
+    state = await orchestrator.get_or_create_state(user_id)
+    print(f"Readiness Score: {state.context_variables.get('readiness_score')}")
+    print(f"Importance Rating: {state.context_variables.get('importance_rating')}")
+    print(f"Confidence Rating: {state.context_variables.get('confidence_rating')}")
+    print(f"Readiness Stage: {state.context_variables.get('readiness_stage')}")
+
 if __name__ == "__main__":
     asyncio.run(verify_conversation_context())

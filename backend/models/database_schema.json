@@ -1,0 +1,324 @@
+{
+    "project": "PREVENT Dawn",
+    "version": "1.0.0",
+    "description": "Relational database schema for patient management, clinical history, and multi-agent interaction persistence.",
+    "tables": [
+        {
+            "name": "patients",
+            "description": "Core patient identity and readiness status",
+            "columns": [
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "primary_key": true,
+                    "description": "Unique identifier from PREVENT Excel"
+                },
+                {
+                    "name": "name",
+                    "type": "VARCHAR(255)",
+                    "nullable": false
+                },
+                {
+                    "name": "email",
+                    "type": "VARCHAR(255)",
+                    "nullable": true
+                },
+                {
+                    "name": "age",
+                    "type": "INTEGER",
+                    "nullable": true
+                },
+                {
+                    "name": "sex",
+                    "type": "VARCHAR(10)",
+                    "nullable": true
+                },
+                {
+                    "name": "risk_level",
+                    "type": "VARCHAR(20)",
+                    "description": "Low, Moderate, High"
+                },
+                {
+                    "name": "risk_score_numeric",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "readiness_stage",
+                    "type": "VARCHAR(50)",
+                    "description": "Precontemplation, Contemplation, Preparation, Action, Maintenance"
+                },
+                {
+                    "name": "motivation_level",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "physician_name",
+                    "type": "VARCHAR(255)"
+                },
+                {
+                    "name": "postal_code",
+                    "type": "VARCHAR(20)"
+                },
+                {
+                    "name": "preferred_language",
+                    "type": "VARCHAR(50)"
+                },
+                {
+                    "name": "health_literacy",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "family_history",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "occupation",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "comorbidities",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "medications",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "created_at",
+                    "type": "TIMESTAMP",
+                    "default": "CURRENT_TIMESTAMP"
+                }
+            ]
+        },
+        {
+            "name": "biomarker_logs",
+            "description": "Historical log of clinical readings",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary_key": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "a1c",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "fbs",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "systolic_bp",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "diastolic_bp",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "ldl",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "hdl",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "total_cholesterol",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "tg",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "bmi",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "recorded_at",
+                    "type": "TIMESTAMP"
+                }
+            ]
+        },
+        {
+            "name": "barriers_facilitators",
+            "description": "Clinical insights for behavioral change coaching",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary_key": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "content",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "type",
+                    "type": "VARCHAR(20)",
+                    "description": "barrier | facilitator"
+                },
+                {
+                    "name": "category",
+                    "type": "VARCHAR(50)",
+                    "description": "logistical, emotional, social, physical"
+                },
+                {
+                    "name": "identified_at",
+                    "type": "TIMESTAMP"
+                }
+            ]
+        },
+        {
+            "name": "journey_logs",
+            "description": "Tracking patient movement through clinical phases",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary_key": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "stage_from",
+                    "type": "VARCHAR(50)"
+                },
+                {
+                    "name": "stage_to",
+                    "type": "VARCHAR(50)"
+                },
+                {
+                    "name": "transitioned_at",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "reasoning",
+                    "type": "TEXT"
+                }
+            ]
+        },
+        {
+            "name": "patient_segments",
+            "description": "Categorization data for AI personalization",
+            "columns": [
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "primary_key": true,
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "psychographic",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "demographic",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "behavioral",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "geographic",
+                    "type": "VARCHAR(100)"
+                },
+                {
+                    "name": "socio_economic",
+                    "type": "VARCHAR(100)"
+                }
+            ]
+        },
+        {
+            "name": "environmental_factors",
+            "columns": [
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "primary_key": true,
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "deprivation_index",
+                    "type": "FLOAT"
+                },
+                {
+                    "name": "walkability_index",
+                    "type": "FLOAT"
+                }
+            ]
+        },
+        {
+            "name": "messages",
+            "description": "Full conversation history persistence",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary_key": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "role",
+                    "type": "VARCHAR(20)",
+                    "description": "user | assistant | system"
+                },
+                {
+                    "name": "content",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "TIMESTAMP"
+                }
+            ]
+        },
+        {
+            "name": "agent_states",
+            "description": "Active state machine configuration for the orchestrator",
+            "columns": [
+                {
+                    "name": "prevent_id",
+                    "type": "VARCHAR(50)",
+                    "primary_key": true,
+                    "foreign_key": "patients.prevent_id"
+                },
+                {
+                    "name": "current_agent",
+                    "type": "VARCHAR(50)"
+                },
+                {
+                    "name": "context_variables",
+                    "type": "JSON"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "TIMESTAMP"
+                }
+            ]
+        }
+    ]
+}

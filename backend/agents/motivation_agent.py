@@ -19,6 +19,15 @@ class MotivationAgent(BaseAgent):
             updated_context["readiness_score"] = float(result.readiness_score)
             state.patient_profile.motivation_level = f"Readiness: {result.readiness_score}/10"
 
+        if result.importance_rating and float(result.importance_rating) > 0:
+            updated_context["importance_rating"] = float(result.importance_rating)
+            
+        if result.confidence_rating and float(result.confidence_rating) > 0:
+            updated_context["confidence_rating"] = float(result.confidence_rating)
+            
+        if result.readiness_stage:
+            updated_context["readiness_stage"] = result.readiness_stage
+
         return {
             "response": result.response,
             "updated_context": updated_context

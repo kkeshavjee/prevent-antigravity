@@ -44,8 +44,21 @@ export default function Chat() {
             const result = await api.chat(userId, userMsg);
             setMessages(prev => [...prev, { sender: 'ai', text: result.response }]);
         } catch (error: any) {
-            console.error("Chat API error:", error);
-            const errorMsg = error.response?.data?.detail || error.message || "Unknown error";
+            console.error("Chat API error details:", {
+                message: error.message,
+                response: error.response,
+                code: error.code,
+                config: error.config
+            });
+
+            // Extract the most specific error message possible
+            let errorMsg = "Network Error";
+            if (error.response?.data?.detail) {
+                errorMsg = error.response.data.detail;
+            } else if (error.message) {
+                errorMsg = error.message;
+            }
+
             setMessages(prev => [...prev, {
                 sender: 'ai',
                 text: `Sorry, I'm having trouble connecting to my brain right now. (Error: ${errorMsg})`
@@ -56,58 +69,74 @@ export default function Chat() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-800 md:rounded-2xl md:shadow-lg">
-            <div className="flex items-center p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
-                    <Apple className="w-6 h-6 text-green-600 dark:text-green-400" />
+        <div className="flex flex-col h-full bg-transparent overflow-hidden">
+            <div className="flex items-center p-4 border-b border-white/10 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3 border border-primary/20">
+                    <img src="/PREVENT logo.png" className="w-6 h-6 object-contain opacity-80" alt="Logo" />
                 </div>
                 <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Dawn</h2>
+                    <h2 className="text-lg font-extralight tracking-widest text-white uppercase">Dawn</h2>
                     <div className="flex items-center space-x-2">
-                        <span className="text-xs text-green-500">Online</span>
-                        <span className="text-[10px] text-gray-400">| ID: </span>
-                        <input
-                            type="text"
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
-                            className="text-[10px] text-gray-400 bg-transparent border-none focus:ring-0 p-0 w-20"
-                            title="Click to edit User ID for testing (e.g. 1001)"
-                        />
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                        <span className="text-[10px] text-primary/60 uppercase tracking-widest font-light">Direct Assistance</span>
                     </div>
                 </div>
-                <button
-                    onClick={async () => {
-                        try {
-                            const res = await fetch('http://127.0.0.1:8000/health');
-                            const data = await res.json();
-                            alert(`Connection Success: ${JSON.stringify(data)}`);
-                        } catch (e: any) {
-                            alert(`Connection Failed: ${e.message}`);
-                        }
-                    }}
-                    className="ml-auto text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-gray-500"
-                >
-                    Test Connection
-                </button>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-white/20 uppercase tracking-widest">ID:</span>
+                    <input
+                        type="text"
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                        className="text-[10px] text-white/40 bg-transparent border-none focus:ring-0 p-0 w-16 font-light"
+                        title="Edit User ID"
+                    />
+                </div>
             </div>
 
-            <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto">
+            <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto custom-scrollbar">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center self-start"><Apple className="w-5 h-5 text-green-600" /></div>}
-                        <div className={`max-w-[70%] px-4 py-3 rounded-2xl ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-lg' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-lg'}`}>
-                            <p className="whitespace-pre-wrap">{msg.text}</p>
+                    <div key={index} className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        {msg.sender === 'ai' && (
+                            <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center self-start overflow-hidden">
+                                <img src="/PREVENT logo.png" className="w-4 h-4 object-contain" alt="Dawn" />
+                            </div>
+                        )}
+                        <div className={`max-w-[80%] px-5 py-3 rounded-2xl shadow-xl backdrop-blur-md ${msg.sender === 'user'
+                            ? 'bg-primary/20 border border-primary/30 text-white rounded-br-none'
+                            : 'bg-white/5 border border-white/10 text-white/90 rounded-bl-none'
+                            }`}>
+                            <p className="text-sm font-light leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                         </div>
                     </div>
                 ))}
-                {isLoading && <Loader2 className="animate-spin w-5 h-5 text-gray-500" />}
+                {isLoading && (
+                    <div className="flex justify-start items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                            <Loader2 className="animate-spin w-4 h-4 text-primary/60" />
+                        </div>
+                        <span className="text-[10px] text-white/20 tracking-widest uppercase italic">Dawn is thinking...</span>
+                    </div>
+                )}
                 <div ref={chatEndRef} />
             </div>
 
-            <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 border-t border-gray-200 flex-shrink-0">
-                <div className="relative">
-                    <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Type message..." className="w-full pl-4 pr-12 py-3 bg-gray-100 dark:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    <button onClick={handleSend} disabled={isLoading || !input.trim()} className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2.5 bg-blue-600 text-white rounded-full"><Send className="w-5 h-5" /></button>
+            <div className="p-4 bg-transparent border-t border-white/10 flex-shrink-0">
+                <div className="relative group">
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                        placeholder="Speak with Dawn..."
+                        className="w-full pl-6 pr-14 py-4 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-primary/40 focus:bg-white/10 transition-all text-sm font-light text-white placeholder:text-white/20"
+                    />
+                    <button
+                        onClick={handleSend}
+                        disabled={isLoading || !input.trim()}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-primary text-primary-foreground rounded-full hover:scale-105 transition-transform disabled:opacity-20 disabled:scale-100 shadow-lg shadow-primary/20"
+                    >
+                        <Send className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
         </div>

@@ -12,11 +12,11 @@ export default function MainLayout() {
     };
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-200 h-screen w-full flex flex-col">
-            <div className="container mx-auto h-full max-w-2xl flex flex-col flex-1 overflow-hidden">
-                <div className="flex-1 overflow-hidden relative">
+        <div className="app-bg text-foreground h-screen w-full flex flex-col">
+            <div className="container mx-auto h-full max-w-2xl px-4 flex flex-col flex-1 overflow-hidden z-10">
+                <main className="flex-1 overflow-hidden relative">
                     <Outlet />
-                </div>
+                </main>
                 <Navbar currentPage={getCurrentPage()} />
             </div>
         </div>

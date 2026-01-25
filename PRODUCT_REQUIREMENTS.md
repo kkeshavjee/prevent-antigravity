@@ -48,11 +48,30 @@ To transform diabetes prevention by providing scalable, personalized, and proact
 
     * **Researchers/Policymakers:** For data on population-level effectiveness and policy recommendations.
 
-## 4. User Journey & Core Features
+## 4. Evidence-Based Clinical Design Principles
+
+Based on the research paper *"Designing Disease-Specific mHealth Apps for Clinical Value"* (Keshavjee et al., 2021), the following design principles are central to the PREVENT Dawn architecture:
+
+### 4.1. Human-Centered Design (HCD) for All Stakeholders
+We prioritize not just the patient but also the **Primary Care Physician (PCP)** as a key user. The app is designed to provide value in the "between-visit" space, capturing data that assists the HCP in their diagnostic and treatment plans[cite: 2021].
+
+### 4.2. Theoretical Underpinnings
+Every agent interaction must be anchored in a proven behavior change theory (e.g., **COM-B**, **SDT**, or **TTM**). This ensures that intervention outcomes are measurable and can be attributed to either the design or the underlying behavioral model.
+
+### 4.3. Clinical Alignment & Guidance
+The bot's recommendations must strictly align with evidence-based clinical guidelines and the patient's existing care plan. This prevents "clinical conflict," which is a primary reason for patient attrition in digital health tools.
+
+### 4.4. Minimizing Cognitve & Response Burden
+To prevent "tracking fatigue," we utilize **Ecological Momentary Assessment (EMA)** and **Ecological Momentary Interventions (EMI)**—asking highly relevant questions at the opportune moment rather than requiring long, static surveys.
+
+### 4.5. Accessibility & Literacy Optimization
+Designs must account for varying levels of health literacy and numeracy. High-level clinical metrics (e.g., HbA1c, Risk Scores) must be accompanied by plain-language interpretations to ensure the tool provides equal value across all demographic segments.
+
+## 5. User Journey & Core Features
 
 The patient journey through the Diabetes Prevention Bot aligns with the 6 stages of the PREVENT Patient Journey [cite: 185] and incorporates behavior change theories like the Transtheoretical Model (TTM) of Stages of Change (SOC) [cite: 780, 801, 1622] and Self-Determination Theory (SDT)[cite: 7, 168, 1367].
 
-### 4.1. IDENTIFY Stage (Internal System Process)
+### 5.1. IDENTIFY Stage (Internal System Process)
 
 * **Description:** Patients are identified as at-risk of T2D through a backend process leveraging electronic medical record (EMR) data, a high-quality predictive LSTM model, and a decision tree that outlines their predicted pathway to diabetes[cite: 186]. This identification is approved by their primary care physician in a batch process.
 
@@ -62,7 +81,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
     * **Risk Interpretation:** Internally, the bot uses `InterpretPredictiveOutputSignature` to translate complex model outputs into patient-friendly risk levels, pathway summaries, and key contributory lifestyle factors.
 
-### 4.2. INFORM Stage (Proactive Outreach)
+### 5.2. INFORM Stage (Proactive Outreach)
 
 * **Description:** The identified at-risk patients receive an initial outreach message, sent **on behalf of their physician**, inviting them to engage with the bot via a dedicated digital health app or website[cite: 187].
 
@@ -72,7 +91,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
     * **App Onboarding:** The app's initial screen requires a code from the doctor, and then welcomes the patient, indicating the app's purpose to help on their health journey[cite: 87, 91, 92]. It clearly shows how to access the chat interface[cite: 93].
 
-### 4.3. EDUCATE & MOTIVATE Stage (Initial Engagement & Foundational Knowledge)
+### 5.3. EDUCATE & MOTIVATE Stage (Initial Engagement & Foundational Knowledge)
 
 * **Description:** Upon logging into the app/website, patients begin their interactive journey. This stage focuses on assessing initial motivation, capturing psychographic data for personalization, and providing core education about diabetes prevention. This combined stage aims to both "EDUCATE and MOTIVATE them using a variety of evidence-based behavior change theories"[cite: 188].
 
@@ -120,7 +139,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
     * **Post-Education Knowledge Assessment:** The `AssessKnowledgePostEducationSignature` evaluates knowledge acquisition after education, ensuring comprehension before proceeding.
 
-### 4.4. EXPLORE & COMMIT Stage (Personalized Options & Goal Setting)
+### 5.4. EXPLORE & COMMIT Stage (Personalized Options & Goal Setting)
 
 * **Description:** Once sufficiently motivated and educated, patients are presented with personalized lifestyle intervention options (the "Mall")[cite: 36]. They explore these options and make a conscious choice to *commit* to a specific goal or intervention plan. This aligns with the "Offer Mall" step in the Knowledge to Action framework[cite: 36, 550].
 
@@ -132,7 +151,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
     * **Goal Setting & Commitment:** Facilitates the patient's clear selection and commitment to a specific goal or program from the "Mall" offerings[cite: 38].
 
-### 4.5. ENGAGE Stage (Working on Goals & Habit Formation)
+### 5.5. ENGAGE Stage (Working on Goals & Habit Formation)
 
 * **Description:** Patients actively work on their chosen goals, interacting with the bot, potentially health coaches, or peer-to-peer groups to develop and sustain healthy habits[cite: 193]. This is a phase of ongoing support and problem-solving, aligning with the "ENGAGE" stage in the patient journey where individuals interact with coaches or their peers to work on goals[cite: 193].
 
@@ -156,7 +175,7 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
         * **Learning from Peers:** Members share successes and setbacks, and learn from peers who might have better control of their disease[cite: 55, 634].
 
-### 4.6. SUSTAIN Stage (Long-Term Maintenance)
+### 5.6. SUSTAIN Stage (Long-Term Maintenance)
 
 * **Description:** The bot provides ongoing motivation, support, and structure to help patients maintain healthy habits over the long term, preventing regression[cite: 194, 60]. This aligns with the "Sustain Knowledge Use" step of the KTA model[cite: 543].
 
@@ -168,9 +187,9 @@ The patient journey through the Diabetes Prevention Bot aligns with the 6 stages
 
     * **Relapse Prevention/Management:** Provides strategies and support if a patient experiences a setback (relapse), viewing recurrence as a learning opportunity rather than a failure[cite: 1674, 1680]. The bot can help patients re-enter the cycle of change quickly[cite: 120].
 
-## 5. Architectural Components & Features (High-Level)
+## 6. Architectural Components & Features (High-Level)
 
-### 5.1. Multi-Agent Framework
+### 6.1. Multi-Agent Framework
 
 The core of the bot's intelligence is a multi-agent framework, where specialized agents handle distinct functions:
 
@@ -194,23 +213,23 @@ The core of the bot's intelligence is a multi-agent framework, where specialized
 
 * **(Future consideration) Peer Interaction Agent:** Facilitates peer-to-peer learning and support within the platform[cite: 6].
 
-### 5.2. Orchestrator
+### 6.2. Orchestrator
 
 A dedicated **Orchestrator** component will serve as the central control plane for the entire multi-agent system, effectively fulfilling the **Model-Controller-Programmer** role for the overall application.
 
 * **Role:** The Orchestrator receives user input, determines user intent, manages conversational state across different agents, routes requests to the appropriate specialized agent, and coordinates the overall flow through the patient journey stages. It also handles the invocation of DSPy programs and interfaces with external analytical tools. It acts as the "brain" that decides which "program" (agent/DSPy module) to invoke based on user input and manages the conversational flow.
 
-### 5.3. MCP Server (Model Context Protocol)
+### 6.3. MCP Server (Model Context Protocol)
 
 The **Model Context Protocol (MCP) Server** is a distinct component responsible for managing the context and interactions specifically with the underlying Large Language Models (LLMs) used by DSPy.
 
 * **Role:** The MCP ensures that LLM calls are consistent, maintain conversational context (e.g., user profile, session history), and adhere to specific interaction patterns defined by DSPy signatures. It facilitates the efficient and reliable functioning of the LLMs within the multi-agent framework, acting as a specialized protocol handler for the models themselves, rather than the overall system orchestrator.
 
-### 5.4. DSPy Integration
+### 6.4. DSPy Integration
 
 DSPy is utilized by each agent to declaratively define and optimize their interactions with the LLM. This ensures robust, efficient, and self-improving prompt engineering for tasks like interpretation, generation, and assessment.
 
-### 5.5. External Tool Integrations
+### 6.5. External Tool Integrations
 
 * **Predictive Analytics (LSTM):** Provides individual diabetes risk scores[cite: 186, 209].
 
@@ -220,11 +239,11 @@ DSPy is utilized by each agent to declaratively define and optimize their intera
 
 * **EMR System:** Source of initial patient data for batch processing[cite: 23].
 
-### 5.6. Digital Front-End
+### 6.6. Digital Front-End
 
 * A user-friendly digital health application (mobile app) and/or a web-based portal will serve as the patient's interface with the chatbot[cite: 188]. This will be designed for clarity, ease of use, and tailored communication. Visual elements such as progress indicators (e.g., "Session Progress to Date" [cite: 98], "Weight loss goal" display [cite: 101]) and interactive elements (e.g., multiple choice notifications for logging progress [cite: 132, 137]) will be key.
 
-## 6. Out of Scope for Initial Release
+## 7. Out of Scope for Initial Release
 
 * Direct real-time integration with EMR for patient data *updates* (initial patient data is batch processed).
 
@@ -238,7 +257,7 @@ DSPy is utilized by each agent to declaratively define and optimize their intera
 
 * Multilingual support beyond English (initial focus).
 
-## 7. Success Metrics (Key Performance Indicators - KPIs)
+## 8. Success Metrics (Key Performance Indicators - KPIs)
 
 * **Engagement:**
 
@@ -280,9 +299,9 @@ DSPy is utilized by each agent to declaratively define and optimize their intera
 
     * Error rate.
 
-## 8. Assumptions & Constraints
+## 9. Assumptions & Constraints
 
-### 8.1. Assumptions
+### 9.1. Assumptions
 
 * Access to high-quality, pre-trained LSTM, Decision Tree, and Prescriptive Analytics models with defined APIs.
 
@@ -296,7 +315,7 @@ DSPy is utilized by each agent to declaratively define and optimize their intera
 
 * The digital front-end (app/website) provides the necessary user interface elements for interaction and data input (e.g., chat interface, selection buttons, progress logging forms).
 
-### 8.2. Constraints
+### 9.2. Constraints
 
 * Initial EMR data for patient identification will **not** include psychographic information; this must be collected post-login via bot interaction[cite: 199].
 
@@ -304,11 +323,11 @@ DSPy is utilized by each agent to declaratively define and optimize their intera
 
 * Regulatory compliance for health data privacy (e.g., PHIPA in Ontario, Canada) must be strictly adhered to and will inform all architectural decisions[cite: 27].
 
-## 9. Security & Privacy Considerations
+## 10. Security & Privacy Considerations
 
 Given the sensitive nature of patient health information, robust security and privacy measures are foundational requirements for the Diabetes Prevention Bot.
 
-### 9.1. Secure Architecture
+### 10.1. Secure Architecture
 
 The system architecture must be designed with security-by-design principles from the ground up. This includes:
 
@@ -322,7 +341,7 @@ The system architecture must be designed with security-by-design principles from
 
 * **Logging and Monitoring:** Comprehensive security logging and real-time monitoring for suspicious activities are essential for threat detection and incident response.
 
-### 9.2. User Authentication & Authorization
+### 10.2. User Authentication & Authorization
 
 Robust mechanisms must be in place to ensure only authorized individuals can access patient data and system functionalities.
 
@@ -336,7 +355,7 @@ Robust mechanisms must be in place to ensure only authorized individuals can acc
 
 * **Consent Management:** Explicitly capture and manage patient consent for data collection, usage, and sharing, particularly in relation to psychographic data and sharing reports with physicians.
 
-### 9.3. Ethical AI Considerations
+### 10.3. Ethical AI Considerations
 
 While broader governance is outside the app's direct scope, the bot's design must embody ethical AI principles in its interactions:
 
@@ -350,15 +369,15 @@ While broader governance is outside the app's direct scope, the bot's design mus
 
 * **Feedback Mechanisms:** Provide clear channels for users to report concerns, misunderstandings, or dissatisfaction with the bot's advice or interaction style.
 
-## 10. Technical Considerations (High-Level for Junior Programmers)
+## 11. Technical Considerations (High-Level for Junior Programmers)
 
 This section outlines high-level technical approaches relevant for a junior programmer to understand the system's architecture and interaction patterns.
 
-### 10.1. Overall Architecture
+### 11.1. Overall Architecture
 
 The system will primarily operate as a backend service (managed by the Orchestrator and MCP Server) exposed via APIs to the mobile and web front-ends.
 
-### 10.2. Orchestrator (The "Brain" / Model-Controller-Programmer)
+### 11.2. Orchestrator (The "Brain" / Model-Controller-Programmer)
 
 * **Core Logic:** The Orchestrator will contain the main application logic, managing the patient's journey through the defined stages (IDENTIFY to SUSTAIN). It's essentially a state machine that progresses based on user input and agent outputs.
 
@@ -366,19 +385,19 @@ The system will primarily operate as a backend service (managed by the Orchestra
 
 * **Conversation State:** The Orchestrator will maintain the conversational state for each patient, ensuring continuity across interactions and agents. This state will include the patient's profile, current goals, and interaction history.
 
-### 10.3. Multi-Agent System Design
+### 11.3. Multi-Agent System Design
 
 * **Modular Agents:** Each agent (e.g., Motivation Agent, Nutrition Agent) should be developed as a separate, self-contained module with a clear set of responsibilities. This makes the system easier to understand, develop, and debug.
 
 * **Defined Interfaces:** Agents will communicate with the Orchestrator and potentially with each other through well-defined input/output interfaces (e.g., Python functions with clear parameter types and return values).
 
-### 10.4. DSPy for LLM Interactions
+### 11.4. DSPy for LLM Interactions
 
 * **Declarative LLM Calls:** Developers will use DSPy to define *what* they want the LLM to do (e.g., `AssessKnowledgeSignature(user_input: str) -> knowledge_gaps: list[str]`), rather than writing complex prompt strings directly. DSPy handles the underlying prompt engineering.
 
 * **Signature-Based Development:** Each specific LLM task will correspond to a DSPy `Signature`. Programmers will focus on implementing these signatures and integrating their outputs.
 
-### 10.5. MCP Server (Model Context Protocol)
+### 11.5. MCP Server (Model Context Protocol)
 
 * **LLM API Abstraction:** The MCP Server will manage the actual API calls to the large language models (LLMs), abstracting away direct LLM interaction details from the agents.
 
@@ -386,7 +405,7 @@ The system will primarily operate as a backend service (managed by the Orchestra
 
 * **Reliability Layer:** The MCP Server will provide a robust layer for LLM interactions, handling aspects like retries and rate limiting.
 
-### 10.6. External Model Integration Best Practices
+### 11.6. External Model Integration Best Practices
 
 Integrating with external analytical models (LSTM, Decision Tree, Prescriptive Analytics) requires careful attention for stability and maintainability:
 
@@ -416,13 +435,13 @@ Integrating with external analytical models (LSTM, Decision Tree, Prescriptive A
 
 * **Comprehensive Logging:** Implement detailed logging for all requests, responses, and errors related to external model interactions. This is invaluable for debugging, performance monitoring, and compliance.
 
-### 10.7. Data Storage & Management
+### 11.7. Data Storage & Management
 
 * **Database Design:** Plan for a database to store patient profiles, conversational history (for context and auditing), progress tracking data, and chosen goals.
 
 * **Secure Data Handling:** Implement industry-standard security practices for data encryption (at rest and in transit), access control, and data retention policies, in compliance with health regulations.
 
-### 10.8. Deployment Strategy
+### 11.8. Deployment Strategy
 
 * **Containerization:** Use containerization (e.g., Docker) for individual agents and the Orchestrator to ensure consistent environments across development, testing, and production.
 
@@ -430,9 +449,9 @@ Integrating with external analytical models (LSTM, Decision Tree, Prescriptive A
 
 ---
 
-## 11. Current Implementation Status (Dev Notes v1.1)
+## 12. Current Implementation Status (Dev Notes v1.1)
 
-### 11.1 Completed Features
+### 12.1 Completed Features
 - **Frontend Framework**: React (Vite) + TypeScript + Tailwind CSS set up.
 - **Backend Framework**: FastAPI set up with mock data loader.
 - **Authentication**: Simple Patient Lookup (Enter Name) implemented.

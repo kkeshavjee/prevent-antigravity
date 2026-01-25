@@ -30,6 +30,9 @@ class MotivationSignature(dspy.Signature):
     
     response = dspy.OutputField(desc="An empathetic response using MI techniques")
     readiness_score = dspy.OutputField(desc="Estimated readiness score (1-10) based on input, or -1 if unknown")
+    importance_rating = dspy.OutputField(desc="User's perceived importance of change (1-10), or -1 if unknown")
+    confidence_rating = dspy.OutputField(desc="User's confidence in making change (1-10), or -1 if unknown")
+    readiness_stage = dspy.OutputField(desc="Estimated Stage of Change: 'precontemplation', 'contemplation', 'preparation', 'action', or 'maintenance'")
 
 class EducationSignature(dspy.Signature):
     """

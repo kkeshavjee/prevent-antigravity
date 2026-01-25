@@ -18,6 +18,12 @@ We follow a **Feature Branching** model. Always branch from `main` and use descr
 - `feature/mcp-server`: Model Context Protocol integration.
 - `feature/patient-matching`: Secure profile linking via invitation codes.
 
+## Development Standard: Task Decoupled Planning (TDP)
+
+We follow the **TDP Protocol** to ensure reliability.
+*   **Read the Protocol:** [docs/process/TDP_DEV_PROTOCOL.md](docs/process/TDP_DEV_PROTOCOL.md)
+*   **Core Rule:** Never stick to a "Think & Act" loop. Always **Plan** (create `implementation_plan.md`) -> **Execute** -> **Verify**.
+
 ## Development Workflow
 
 1.  **Requirement Review**: Check [PRODUCT_REQUIREMENTS.md](PRODUCT_REQUIREMENTS.md) and the corresponding GitHub Issue.
@@ -30,7 +36,10 @@ We follow a **Feature Branching** model. Always branch from `main` and use descr
 
 ## Communication
 
-- **Visual Roadmap**: Use the internal `task.md` for daily status and checklist tracking.
+- **Supervisor Graph**: Use `docs/ROADMAP.md` to track dependencies and select the next task.
+- **Session Continuity**: Use `docs/active_context.md` to save/restore context. See [Session Workflow](docs/guides/SESSION_WORKFLOW.md).
+    - **Note**: Do not commit the populated `active_context.md` file. It is local-only and ignored by git to keep the repo clean.
+- **Project Tasks**: See the shared `project_tasks.md` file for a project‑wide task board.
 - **Specifications**: High-level vision lives in the PRD. Granular technical discussions happen within GitHub Issues.
 - **Reviews**: All code must be reviewed via Pull Request before merging to `main`.
 
