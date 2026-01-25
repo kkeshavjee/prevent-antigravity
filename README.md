@@ -1,8 +1,14 @@
-# PREVENT Dawn: Diabetes Prevention Platform
+# PREVENT Dawn: AI-Driven Diabetes Prevention Research Platform
 
-PREVENT Dawn is a digital health intervention system designed to help patients prevent diabetes through personalized readiness assessments and AI-driven coaching.
+**PREVENT Dawn** is a digital health research platform designed to develop and validate next-generation behavioral interventions. It serves as a sandbox for exploring how multi-agent AI systems can support patients at risk of diabetes.
 
-It is named Dawn to symbolize the dawn, a time of hope and new beginnings.  It is meant to offer those at risk of developing diabetes new hope. 
+It is named **Dawn** to symbolize a new beginning and hope for patients.
+
+## 🔬 Research & Vision
+This platform is intended for researching:
+*   **Novel Behavioral Interventions**: Testing scalable, AI-driven coaching based on Motivational Interviewing and the Transtheoretical Model.
+*   **Specialized AI Agents**: Orchestrating a team of agents (Nutrition, Activity, Stress) that collaborate to deliver personalized care.
+*   **Automated Clinical Validation**: Future capabilities will include an autonomous "Scientist Agent" to facilitate **Randomized Controlled Trials (RCTs)**, allowing the system to run, measure, and validate interventions in real-time.
 
 ## Key Features
 
