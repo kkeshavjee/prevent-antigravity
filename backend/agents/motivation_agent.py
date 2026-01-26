@@ -17,13 +17,31 @@ class MotivationAgent(BaseAgent):
             state.patient_profile.motivation_level = f"Readiness: {result.readiness_score}/10"
 
         if result.importance_rating and float(result.importance_rating) > 0:
-            updated_context["importance_rating"] = float(result.importance_rating)
+            rating = float(result.importance_rating)
+            updated_context["importance_rating"] = rating
+            state.patient_profile.importance_rating = rating
             
         if result.confidence_rating and float(result.confidence_rating) > 0:
-            updated_context["confidence_rating"] = float(result.confidence_rating)
+            rating = float(result.confidence_rating)
+            updated_context["confidence_rating"] = rating
+            state.patient_profile.confidence_rating = rating
             
         if result.readiness_stage:
-            updated_context["readiness_stage"] = result.readiness_stage
+            stage = result.readiness_stage.lower()
+            updated_context["readiness_stage"] = stage
+            state.patient_profile.readiness_stage = stage
+
+        if result.barriers:
+            # Assuming comma separated or similar if it's a string, or just save as is if it's treated as a list later
+            # For now, let's treat as description string or convert to list
+            barriers_list = [b.strip() for b in str(result.barriers).split(',')] if ',' in str(result.barriers) else [str(result.barriers)]
+            state.patient_profile.barriers = barriers_list
+            updated_context["barriers"] = barriers_list
+
+        if result.facilitators:
+            facilitators_list = [f.strip() for f in str(result.facilitators).split(',')] if ',' in str(result.facilitators) else [str(result.facilitators)]
+            state.patient_profile.facilitators = facilitators_list
+            updated_context["facilitators"] = facilitators_list
 
         return {
             "response": result.response,

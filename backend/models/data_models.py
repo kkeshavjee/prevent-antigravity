@@ -17,7 +17,13 @@ class Biomarkers(BaseModel):
     hdl: float
     total_cholesterol: float
     weight: float
-    height: float
+    height: float # in cm
+
+    @property
+    def bmi(self) -> float:
+        if self.height > 0:
+            return self.weight / ((self.height / 100) ** 2)
+        return 0.0
 
 class PatientProfile(BaseModel):
     user_id: str
@@ -28,6 +34,11 @@ class PatientProfile(BaseModel):
     biomarkers: Biomarkers
     psychographics: Dict[str, Any] = {}
     motivation_level: str = "Unknown" # Precontemplation, Contemplation, etc.
+    readiness_stage: Optional[str] = None
+    importance_rating: Optional[float] = None
+    confidence_rating: Optional[float] = None
+    barriers: List[str] = []
+    facilitators: List[str] = []
     current_stage: PatientStage = PatientStage.EDUCATE_MOTIVATE # Default for new users
     physician_name: Optional[str] = "Dr. Smith"
 

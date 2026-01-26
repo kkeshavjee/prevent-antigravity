@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MotivationAssessment } from './MotivationAssessment';
 import { MotivationResults } from './MotivationResults';
 import { Button } from '@/components/ui/button';
-import { X, MessageCircle } from 'lucide-react';
+import { X, MessageCircle, Sparkles } from 'lucide-react';
 
 interface MotivationScore {
   stage: 'precontemplation' | 'contemplation' | 'preparation' | 'action' | 'maintenance';
@@ -37,13 +38,6 @@ export function MotivationModule({ physicianName = "Dr. Smith", onComplete, onCl
     setAssessment(null);
   };
 
-  const handleMotivationUpdate = (updatedAssessment: MotivationScore) => {
-    setAssessment(updatedAssessment);
-    if (onComplete) {
-      onComplete(updatedAssessment);
-    }
-  };
-
   const renderCurrentState = () => {
     switch (currentState) {
       case 'assessment':
@@ -68,32 +62,39 @@ export function MotivationModule({ physicianName = "Dr. Smith", onComplete, onCl
       case 'chat':
         if (!assessment) return null;
         return (
-          <div className="flex flex-col items-center justify-center space-y-8 p-12 glass-card max-w-2xl mx-auto text-center">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-              <MessageCircle className="w-10 h-10 text-primary" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center space-y-10 p-12 glass-card max-w-2xl mx-auto text-center relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <Sparkles className="w-32 h-32 text-primary" />
+            </div>
+
+            <div className="w-24 h-24 rounded-full glass-card flex items-center justify-center border-primary/20 shadow-[0_0_30px_rgba(234,179,8,0.15)]">
+              <MessageCircle className="w-12 h-12 text-primary" />
             </div>
             <div>
-              <h2 className="text-3xl font-light text-white mb-4 tracking-wide">Continue with Dawn</h2>
-              <p className="text-white/60 font-light leading-relaxed">
-                For a deeper conversation about your health journey and personalized coaching,
-                let's connect with <strong>Dawn</strong>, your Diabetes Prevention Assistant.
+              <h2 className="text-4xl font-extralight text-white mb-4 tracking-tight">Illuminate your path.</h2>
+              <p className="text-white/50 font-light leading-relaxed max-w-md mx-auto">
+                For a deeper synchronization with your wellness goals, let's connect with <strong>Dawn</strong>, your specialized neural coach.
               </p>
             </div>
-            <div className="flex flex-col w-full gap-4 pt-4">
+            <div className="flex flex-col w-full gap-5 pt-4 max-w-xs relative z-10">
               <button
                 onClick={() => window.location.href = '/chat'}
-                className="dawn-button py-4 text-lg"
+                className="dawn-button py-5 text-base flex items-center justify-center gap-3"
               >
-                Open Chat Assistant
+                <span>Synchronize with Dawn</span>
               </button>
               <button
                 onClick={() => setCurrentState('results')}
-                className="text-white/40 hover:text-white/60 text-sm font-light uppercase tracking-widest transition-colors"
+                className="text-[10px] text-white/30 hover:text-white/60 uppercase tracking-[0.4em] transition-all font-medium py-2"
               >
-                Back to Results
+                Return to Analysis
               </button>
             </div>
-          </div>
+          </motion.div>
         );
 
       default:
@@ -102,20 +103,27 @@ export function MotivationModule({ physicianName = "Dr. Smith", onComplete, onCl
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8 px-4 relative">
+    <div className="h-full w-full py-12 px-6 relative flex flex-col items-center overflow-y-auto custom-scrollbar">
       {onClose && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 z-10"
+        <button
+          className="absolute top-8 right-8 z-50 text-white/30 hover:text-white/80 transition-all p-2"
           onClick={onClose}
         >
           <X className="h-6 w-6" />
-          <span className="sr-only">Close</span>
-        </Button>
+        </button>
       )}
-      <div className="container mx-auto">
-        {renderCurrentState()}
+      <div className="container mx-auto max-w-4xl relative z-10 pb-20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentState}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            {renderCurrentState()}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

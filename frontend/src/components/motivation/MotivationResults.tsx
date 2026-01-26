@@ -1,17 +1,17 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  TrendingUp, 
-  Brain, 
-  Heart, 
-  Target, 
-  MessageCircle, 
+import {
+  TrendingUp,
+  Brain,
+  Heart,
+  Target,
+  MessageCircle,
   Lightbulb,
   CheckCircle,
-  Clock
+  Clock,
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 
 interface MotivationScore {
@@ -30,230 +30,227 @@ interface MotivationResultsProps {
 
 const STAGE_INFO = {
   precontemplation: {
-    title: 'Not Ready Yet',
-    description: 'You\'re not currently thinking about making health changes',
+    title: 'Discovery Phase',
+    description: 'Processing baseline risk factors and intent.',
     color: 'destructive' as const,
     progress: 10,
     icon: Clock,
     nextSteps: [
-      'Explore what diabetes prevention means for you',
-      'Learn about your personal risk factors',
-      'Consider the benefits of small changes'
+      'Synchronize with Dawn to explore risk logic',
+      'Identify personal optimization nodes',
+      'Benchmark small intervention cycles'
     ],
-    motivationalMessage: 'That\'s completely normal. Many people aren\'t ready to make changes right away, and that\'s okay. Let\'s explore what might be holding you back and what could motivate you in the future.'
+    motivationalMessage: 'Your current psychological strata represents a baseline state. This is an objective starting point for system synchronization.'
   },
   contemplation: {
-    title: 'Getting Ready',
-    description: 'You\'re thinking about making changes but haven\'t committed yet',
+    title: 'Analysis State',
+    description: 'Evaluating ambivalence and change variables.',
     color: 'secondary' as const,
     progress: 30,
     icon: Brain,
     nextSteps: [
-      'Explore your ambivalence about change',
-      'Identify personal reasons for preventing diabetes',
-      'Address concerns about making lifestyle changes'
+      'Resolve internal logic conflicts regarding change',
+      'Inventory personal wellness drivers',
+      'Project future wellness trajectories'
     ],
-    motivationalMessage: 'You\'re in a thoughtful place right now. It\'s natural to feel uncertain about making changes. Let\'s explore what\'s important to you and what might help tip the balance toward taking action.'
+    motivationalMessage: 'You are currently in an intensive analysis state. This period of reflection is essential for high-fidelity behavior planning.'
   },
   preparation: {
-    title: 'Ready to Act',
-    description: 'You\'re planning to make changes in the near future',
+    title: 'Ready for Deployment',
+    description: 'Finalizing action plan for imminent intervention.',
     color: 'default' as const,
     progress: 60,
     icon: Target,
     nextSteps: [
-      'Create a specific action plan',
-      'Identify potential barriers and solutions',
-      'Build confidence in your ability to succeed'
+      'Map specific habit deployment schedule',
+      'Establish barrier mitigation protocols',
+      'Calibrate confidence feedback loops'
     ],
-    motivationalMessage: 'Excellent! You\'re ready to take action. This is an exciting stage where we can work together to create a plan that fits your life and helps you succeed.'
+    motivationalMessage: 'Synchronization complete. You are ready for active deployment. We will now focus on precise habit engineering.'
   },
   action: {
-    title: 'Taking Action',
-    description: 'You\'re actively making health changes',
+    title: 'Active Optimization',
+    description: 'Currently executing new wellness protocols.',
     color: 'default' as const,
     progress: 80,
     icon: TrendingUp,
     nextSteps: [
-      'Maintain momentum and track progress',
-      'Problem-solve obstacles as they arise',
-      'Build sustainable habits'
+      'Monitor real-time protocol compliance',
+      'Iterative problem-solving for edge cases',
+      'Solidify structural habit patterns'
     ],
-    motivationalMessage: 'Wonderful! You\'re already taking steps to improve your health. Let\'s work on maintaining this momentum and making these changes stick for the long term.'
+    motivationalMessage: 'Protocol execution detected. You are actively optimizing your health variables. Momentum is currently nominal.'
   },
   maintenance: {
-    title: 'Maintaining Changes',
-    description: 'You\'re sustaining healthy changes long-term',
+    title: 'Standard Operation',
+    description: 'Intervention successfully integrated into long-term logic.',
     color: 'default' as const,
     progress: 100,
     icon: CheckCircle,
     nextSteps: [
-      'Prevent relapse and stay motivated',
-      'Refine and optimize your healthy habits',
-      'Share your success with others'
+      'Execute relapse prevention subroutines',
+      'Fine-tune existing wellness algorithms',
+      'Benchmark peer synchronization'
     ],
-    motivationalMessage: 'Congratulations! You\'ve successfully maintained healthy changes. Let\'s focus on keeping up this great work and potentially expanding on your success.'
+    motivationalMessage: 'System optimization successful. Your wellness protocols have reached standard operation status. Continuing background monitoring.'
   }
 };
 
-export function MotivationResults({ 
-  assessment, 
-  onStartChat, 
+export function MotivationResults({
+  assessment,
+  onStartChat,
   onRetakeAssessment,
-  physicianName = "Dr. Smith" 
+  physicianName = "Dr. Smith"
 }: MotivationResultsProps) {
   const stageInfo = STAGE_INFO[assessment.stage];
   const IconComponent = stageInfo.icon;
-  
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 8) return 'text-green-600';
-    if (confidence >= 6) return 'text-yellow-600';
-    return 'text-red-600';
-  };
 
-  const getImportanceColor = (importance: number) => {
-    if (importance >= 8) return 'text-green-600';
-    if (importance >= 6) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const needsMotivationalIntervention = 
-    assessment.stage === 'precontemplation' || 
+  const needsMotivationalIntervention =
+    assessment.stage === 'precontemplation' ||
     assessment.stage === 'contemplation' ||
     assessment.importanceRating < 7 ||
     assessment.confidenceRating < 6;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-10">
       {/* Results Header */}
-      <Card>
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">
-              Results shared with {physicianName}
+      <div className="glass-card overflow-hidden">
+        <div className="p-10 border-b border-white/5 text-center relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20"></div>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <Heart className="h-5 w-5 text-primary opacity-60" />
+            <span className="text-[10px] uppercase font-medium tracking-[0.4em] text-white/40">
+              Analysis Synced with {physicianName}
             </span>
           </div>
-          <CardTitle className="flex items-center justify-center gap-3">
-            <IconComponent className="h-8 w-8 text-primary" />
-            Your Readiness Profile
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
+          <h2 className="text-4xl font-extralight text-white tracking-tight flex items-center justify-center gap-5">
+            <IconComponent className="h-10 w-10 text-primary opacity-40 shrink-0" />
+            Psychological Strata
+          </h2>
+        </div>
+
+        <div className="p-10 space-y-12">
           {/* Stage Badge and Progress */}
-          <div className="text-center space-y-4">
-            <Badge variant={stageInfo.color} className="text-lg py-2 px-4">
+          <div className="text-center space-y-6">
+            <div className="text-prismatic text-3xl font-light tracking-wide uppercase">
               {stageInfo.title}
-            </Badge>
-            <p className="text-muted-foreground">{stageInfo.description}</p>
-            <div className="space-y-2">
-              <Progress value={stageInfo.progress} className="h-3" />
-              <p className="text-sm text-muted-foreground">
-                Readiness Level: {stageInfo.progress}%
+            </div>
+            <p className="text-white/40 font-light max-w-md mx-auto leading-relaxed">{stageInfo.description}</p>
+            <div className="space-y-4 max-w-sm mx-auto">
+              <div className="w-full bg-white/5 rounded-full h-0.5 relative">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${stageInfo.progress}%` }}
+                  className="bg-primary h-full shadow-[0_0_15px_rgba(234,179,8,0.8)]"
+                />
+              </div>
+              <p className="text-[9px] text-white/20 uppercase tracking-[0.4em]">
+                Readiness Index: {stageInfo.progress}%
               </p>
             </div>
           </div>
 
-          {/* Importance and Confidence Scores */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-l-4 border-l-primary">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Importance</p>
-                    <p className="text-sm text-muted-foreground">How important this is to you</p>
-                  </div>
-                  <div className={`text-2xl font-bold ${getImportanceColor(assessment.importanceRating)}`}>
-                    {assessment.importanceRating}/10
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-l-4 border-l-secondary">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Confidence</p>
-                    <p className="text-sm text-muted-foreground">Your confidence in making changes</p>
-                  </div>
-                  <div className={`text-2xl font-bold ${getConfidenceColor(assessment.confidenceRating)}`}>
-                    {assessment.confidenceRating}/10
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Motivational Message */}
-      <Alert>
-        <Lightbulb className="h-4 w-4" />
-        <AlertDescription className="text-base leading-relaxed">
-          {stageInfo.motivationalMessage}
-        </AlertDescription>
-      </Alert>
-
-      {/* Next Steps */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Recommended Next Steps
-          </CardTitle>
-          <CardDescription>
-            Based on your assessment, here's what we recommend focusing on
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {stageInfo.nextSteps.map((step, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">
-                  {index + 1}
-                </div>
-                <span className="text-base">{step}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Action Buttons */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Button 
-          onClick={onStartChat} 
-          size="lg" 
-          className="w-full h-auto py-4 px-6 whitespace-normal"
-        >
-          <MessageCircle className="h-5 w-5 mr-2" />
-          <div className="text-left">
-            <div className="font-medium">
-              {needsMotivationalIntervention ? 'Explore Your Readiness' : 'Continue Your Journey'}
+          {/* Metrics */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl flex items-center justify-between group hover:border-white/10 transition-colors">
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Importance</p>
+                <p className="text-sm font-light text-white/60">Value of Prevention</p>
+              </div>
+              <div className="text-4xl font-extralight text-primary group-hover:scale-110 transition-transform">
+                {assessment.importanceRating}<span className="text-sm opacity-20">/10</span>
+              </div>
             </div>
-            <div className="text-sm opacity-90">
-              {needsMotivationalIntervention 
-                ? 'Chat with our AI coach about your concerns and goals'
-                : 'Get personalized recommendations and support'
-              }
+
+            <div className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl flex items-center justify-between group hover:border-white/10 transition-colors">
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Confidence</p>
+                <p className="text-sm font-light text-white/60">Capability Index</p>
+              </div>
+              <div className="text-4xl font-extralight text-primary group-hover:scale-110 transition-transform">
+                {assessment.confidenceRating}<span className="text-sm opacity-20">/10</span>
+              </div>
             </div>
           </div>
-        </Button>
-        
-        <Button 
-          onClick={onRetakeAssessment} 
-          variant="outline" 
-          size="lg"
-          className="w-full h-auto py-4 px-6 whitespace-normal"
-        >
-          <Brain className="h-5 w-5 mr-2" />
-          <div className="text-left">
-            <div className="font-medium">Retake Assessment</div>
-            <div className="text-sm opacity-70">Update your motivation profile</div>
+        </div>
+      </div>
+
+      {/* Recommended Protocols */}
+      <div className="glass-card p-10">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="p-3 bg-primary/10 rounded-xl">
+            <Target className="h-6 w-6 text-primary" />
           </div>
-        </Button>
+          <div>
+            <h3 className="text-xl font-light text-white tracking-wide">Optimization Protocols</h3>
+            <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] mt-1 text-left">Recommended Next Steps</p>
+          </div>
+        </div>
+
+        <ul className="space-y-4">
+          {stageInfo.nextSteps.map((step, index) => (
+            <motion.li
+              key={index}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="flex items-center gap-5 p-4 rounded-xl bg-white/[0.02] border border-transparent hover:border-white/5 transition-all"
+            >
+              <div className="text-[10px] font-medium text-primary/40 border border-primary/20 w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+                0{index + 1}
+              </div>
+              <span className="text-sm font-light text-white/70 tracking-wide">{step}</span>
+            </motion.li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Unified Logic Mapping Alert */}
+      <div className="glass-card p-8 bg-[#0a0a0f]/40 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-30"></div>
+        <div className="flex gap-6 items-start">
+          <Lightbulb className="h-6 w-6 text-primary shrink-0 mt-1 opacity-60" />
+          <div>
+            <p className="text-sm font-light text-white/70 leading-relaxed italic">
+              "{stageInfo.motivationalMessage}"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Subroutines */}
+      <div className="grid md:grid-cols-2 gap-6 pb-20">
+        <button
+          onClick={onStartChat}
+          className="dawn-button group h-auto py-8 text-left justify-start px-10 shadow-2xl shadow-primary/10"
+        >
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <div className="text-lg font-light text-white mb-2 group-hover:tracking-wider transition-all">
+                {needsMotivationalIntervention ? 'INITIATE ANALYSIS' : 'RESUME SYNC'}
+              </div>
+              <div className="text-[10px] font-medium text-white/40 uppercase tracking-[0.2em]">
+                {needsMotivationalIntervention
+                  ? 'Consult with Neural Coach Dawn'
+                  : 'Download Personalized Roadmap'
+                }
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0" />
+          </div>
+        </button>
+
+        <button
+          onClick={onRetakeAssessment}
+          className="glass-card h-auto py-8 px-10 text-left hover:bg-white/[0.05] group"
+        >
+          <div className="text-sm font-light text-white/60 mb-2 group-hover:text-white transition-colors">
+            RECALIBRATE BASELINE
+          </div>
+          <div className="text-[10px] font-medium text-white/20 uppercase tracking-[0.2em] group-hover:text-primary transition-colors">
+            Update Psychological Data
+          </div>
+        </button>
       </div>
     </div>
   );

@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
-import { Heart, Brain, Target, Stethoscope } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Heart, Target, Stethoscope, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface MotivationScore {
   stage: 'precontemplation' | 'contemplation' | 'preparation' | 'action' | 'maintenance';
@@ -18,39 +15,6 @@ interface MotivationAssessmentProps {
   onComplete: (assessment: MotivationScore) => void;
   physicianName?: string;
 }
-
-const STAGE_DESCRIPTIONS = {
-  precontemplation: {
-    title: 'Not Ready',
-    description: 'Not thinking about making health changes in the next 6 months',
-    color: 'destructive',
-    progress: 10
-  },
-  contemplation: {
-    title: 'Getting Ready',
-    description: 'Thinking about making changes but not yet committed',
-    color: 'secondary',
-    progress: 30
-  },
-  preparation: {
-    title: 'Ready to Act',
-    description: 'Planning to make changes in the next month',
-    color: 'default',
-    progress: 60
-  },
-  action: {
-    title: 'Taking Action',
-    description: 'Actively making health changes',
-    color: 'default',
-    progress: 80
-  },
-  maintenance: {
-    title: 'Maintaining',
-    description: 'Sustaining changes for 6+ months',
-    color: 'default',
-    progress: 100
-  }
-};
 
 const ASSESSMENT_QUESTIONS = [
   {
@@ -90,7 +54,7 @@ export function MotivationAssessment({ onComplete, physicianName = "Dr. Smith" }
 
   const calculateMotivationStage = (): MotivationScore['stage'] => {
     const scores = Object.values(answers);
-    const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const averageScore = scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
 
     if (averageScore <= 1.5) return 'precontemplation';
     if (averageScore <= 2.5) return 'contemplation';
@@ -109,7 +73,7 @@ export function MotivationAssessment({ onComplete, physicianName = "Dr. Smith" }
 
   const handleComplete = () => {
     const stage = calculateMotivationStage();
-    const score = Object.values(answers).reduce((a, b) => a + b, 0) / Object.values(answers).length;
+    const score = Object.values(answers).reduce((a, b) => a + b, 0) / (Object.values(answers).length || 1);
 
     onComplete({
       stage,
@@ -124,150 +88,169 @@ export function MotivationAssessment({ onComplete, physicianName = "Dr. Smith" }
 
   if (showRulers) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Stethoscope className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">
-              Assessment from {physicianName}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card w-full max-w-2xl mx-auto"
+      >
+        <div className="p-10 border-b border-white/5 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <Stethoscope className="h-5 w-5 text-primary opacity-60" />
+            <span className="text-[10px] uppercase font-medium tracking-[0.4em] text-white/40">
+              Clinical Context: {physicianName}
             </span>
           </div>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-6 w-6 text-primary" />
-            Importance & Confidence Rulers
-          </CardTitle>
-          <CardDescription>
-            These final questions help us understand your motivation better
-          </CardDescription>
-        </CardHeader>
+          <h2 className="text-4xl font-extralight text-white tracking-tight flex items-center justify-center gap-4">
+            <Target className="h-8 w-8 text-primary opacity-40 shrink-0" />
+            Prioritization
+          </h2>
+          <p className="text-white/30 font-light mt-4 max-w-sm mx-auto text-sm leading-relaxed">
+            Quantifying your current motivation allows for precise synchronization of resources.
+          </p>
+        </div>
 
-        <CardContent className="space-y-8">
-          <div className="space-y-4">
-            <Label className="text-base font-medium">
-              On a scale of 1-10, how important is it for you to prevent diabetes?
-            </Label>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Not important</span>
-                <span>Extremely important</span>
-              </div>
+        <div className="p-10 space-y-12">
+          <div className="space-y-6">
+            <div className="flex justify-between items-end">
+              <Label className="text-sm font-light uppercase tracking-[0.2em] text-white/50">
+                Lvl 1: Importance
+              </Label>
+              <span className="text-2xl font-light text-primary">{importanceRating}<span className="text-xs opacity-20">/10</span></span>
+            </div>
+            <div className="space-y-4">
               <input
                 type="range"
                 min="1"
                 max="10"
                 value={importanceRating}
                 onChange={(e) => setImportanceRating(Number(e.target.value))}
-                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary transition-all hover:bg-white/15"
               />
-              <div className="text-center">
-                <Badge variant="outline" className="text-lg font-semibold">
-                  {importanceRating}/10
-                </Badge>
+              <div className="flex justify-between text-[9px] uppercase tracking-widest text-white/20">
+                <span>Neutral</span>
+                <span>Critical</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <Label className="text-base font-medium">
-              On a scale of 1-10, how confident are you that you can make these changes?
-            </Label>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Not confident</span>
-                <span>Very confident</span>
-              </div>
+          <div className="space-y-6">
+            <div className="flex justify-between items-end">
+              <Label className="text-sm font-light uppercase tracking-[0.2em] text-white/50">
+                Lvl 2: Confidence
+              </Label>
+              <span className="text-2xl font-light text-primary">{confidenceRating}<span className="text-xs opacity-20">/10</span></span>
+            </div>
+            <div className="space-y-4">
               <input
                 type="range"
                 min="1"
                 max="10"
                 value={confidenceRating}
                 onChange={(e) => setConfidenceRating(Number(e.target.value))}
-                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
+                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary transition-all hover:bg-white/15"
               />
-              <div className="text-center">
-                <Badge variant="outline" className="text-lg font-semibold">
-                  {confidenceRating}/10
-                </Badge>
+              <div className="flex justify-between text-[9px] uppercase tracking-widest text-white/20">
+                <span>Reserved</span>
+                <span>Optimistic</span>
               </div>
             </div>
           </div>
 
-          <Button onClick={handleComplete} className="w-full" size="lg">
-            Complete Assessment
-          </Button>
-        </CardContent>
-      </Card>
+          <button onClick={handleComplete} className="dawn-button w-full py-5 text-base mt-4 shadow-xl shadow-primary/10">
+            FINAL SYNC
+          </button>
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="text-center">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Stethoscope className="h-5 w-5 text-primary" />
-          <span className="text-sm text-muted-foreground">
+    <div className="glass-card w-full max-w-2xl mx-auto">
+      <div className="p-10 border-b border-white/5 text-center">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Stethoscope className="h-5 w-5 text-primary opacity-60" />
+          <span className="text-[10px] uppercase font-medium tracking-[0.4em] text-white/40">
             Referred by {physicianName}
           </span>
         </div>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="h-6 w-6 text-primary" />
-          Readiness Assessment
-        </CardTitle>
-        <CardDescription>
-          Let's understand where you are in your health journey. Your doctor cares about your progress and will receive a summary of how you're doing.
-        </CardDescription>
-      </CardHeader>
+        <h2 className="text-4xl font-extralight text-white tracking-tight flex items-center justify-center gap-4">
+          <Heart className="h-8 w-8 text-primary opacity-40 shrink-0" />
+          Readiness
+        </h2>
+        <p className="text-white/30 font-light mt-4 max-w-sm mx-auto text-sm leading-relaxed">
+          Discovery phase allows us to tailor your interface to your current psychological strata.
+        </p>
+      </div>
 
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Question {currentQuestion + 1} of {ASSESSMENT_QUESTIONS.length}</span>
-            <span>{Math.round(((currentQuestion + 1) / ASSESSMENT_QUESTIONS.length) * 100)}% complete</span>
+      <div className="p-10 space-y-10">
+        <div className="space-y-4">
+          <div className="flex justify-between text-[10px] font-medium uppercase tracking-[0.3em] text-white/30">
+            <span>Discovery Block {currentQuestion + 1} of {ASSESSMENT_QUESTIONS.length}</span>
+            <span className="text-primary">{Math.round(((currentQuestion + 1) / ASSESSMENT_QUESTIONS.length) * 100)}%</span>
           </div>
-          <Progress value={((currentQuestion + 1) / ASSESSMENT_QUESTIONS.length) * 100} className="h-2" />
+          <div className="w-full bg-white/5 rounded-full h-0.5 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${((currentQuestion + 1) / ASSESSMENT_QUESTIONS.length) * 100}%` }}
+              className="bg-primary h-full shadow-[0_0_10px_rgba(234,179,8,1)]"
+            />
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium leading-relaxed">
-            {currentQ?.question}
-          </h3>
-
-          <RadioGroup
-            value={answers[currentQ?.id]?.toString()}
-            onValueChange={(value) => handleAnswer(currentQ.id, Number(value))}
-            className="space-y-3"
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            className="space-y-8"
           >
-            {currentQ?.options.map((option) => (
-              <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                <RadioGroupItem value={option.value.toString()} id={`option-${option.value}`} />
-                <Label
-                  htmlFor={`option-${option.value}`}
-                  className="flex-1 cursor-pointer text-base leading-relaxed"
-                >
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
+            <h3 className="text-2xl font-light text-white tracking-wide leading-relaxed">
+              {currentQ?.question}
+            </h3>
 
-        <div className="flex justify-between pt-4">
-          <Button
-            variant="outline"
+            <RadioGroup
+              value={answers[currentQ?.id]?.toString()}
+              onValueChange={(value) => handleAnswer(currentQ.id, Number(value))}
+              className="grid grid-cols-1 gap-4"
+            >
+              {currentQ?.options.map((option) => (
+                <div key={option.value} className="relative group">
+                  <RadioGroupItem value={option.value.toString()} id={`option-${option.value}`} className="sr-only" />
+                  <Label
+                    htmlFor={`option-${option.value}`}
+                    className={`block w-full px-8 py-5 rounded-2xl border transition-all cursor-pointer ${answers[currentQ.id] === option.value
+                      ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(234,179,8,0.1)] text-white'
+                      : 'bg-white/[0.02] border-white/5 text-white/50 hover:bg-white/[0.05] hover:border-white/20'
+                      }`}
+                  >
+                    <span className="text-sm font-light tracking-wide">{option.label}</span>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex justify-between items-center pt-6">
+          <button
             onClick={() => setCurrentQuestion(prev => Math.max(0, prev - 1))}
             disabled={currentQuestion === 0}
+            className="p-4 rounded-full border border-white/5 text-white/20 hover:text-white hover:border-white/20 disabled:opacity-0 transition-all"
           >
-            Previous
-          </Button>
-          <Button
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          <button
             onClick={handleNext}
             disabled={!canProceed}
-            className="min-w-24"
+            className={`dawn-button min-w-[180px] flex items-center justify-center gap-3 ${!canProceed ? 'opacity-20 grayscale cursor-not-allowed' : 'shadow-primary/10 opacity-100'}`}
           >
-            {currentQuestion === ASSESSMENT_QUESTIONS.length - 1 ? 'Continue' : 'Next'}
-          </Button>
+            <span>{currentQuestion === ASSESSMENT_QUESTIONS.length - 1 ? 'PROCEED' : 'NEXT'}</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

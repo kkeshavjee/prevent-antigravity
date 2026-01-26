@@ -12,26 +12,25 @@ This platform is intended for researching:
 
 ## Key Features
 
-### 1. Patient Dashboard
-- **Personalized Overview**: Displays patient name, most responsible physician (e.g., Dr. Smith), and key health metrics.
-- **Health Metrics**: Visualizes Diabetes Risk Score, A1c, FBS, and Weight.
-- **Readiness Profile**: Shows the user's current stage of change, confidence, and importance ratings after assessment.
+### 1. Prismatic Dashboard
+- **Wellness Strata Visualization**: A premium, "Prismatic" interface that visualizes health data through glassmorphism and subtle animations.
+- **Diabetes Risk Strata**: An interactive risk speedometer providing real-time feedback on clinical biomarkers.
+- **Wellness Insights**: Replaces clinical scoring with qualitative "Core Strengths" and "Growth Nodes" extracted from conversations.
 - **Patient Lookup**: Securely connects users to their specific profile and doctor based on their name.
 
-### 2. Readiness Assessment
-- **Psychometric Evaluation**: Assesses the user's readiness to change based on the Transtheoretical Model.
-- **Scoring**: Calculates a "Stage of Change" (Precontemplation, Contemplation, Preparation, Action, Maintenance).
-- **Persistence**: Results are saved locally, allowing users to leave and return without losing progress.
+### 2. Agentic Chat (Dawn)
+- **Neural Coach Integration**: A conversational AI (Dawn) that performs agentic assessments of motivation, barriers, and facilitators.
+- **Dynamic Personalization**: Dawn extracts qualitative insights (facilitators/barriers) during the conversation and updates the dashboard in real-time.
+- **Motivational Interviewing**: Uses OARS (Open questions, Affirmations, Reflections, Summaries) to guide users through their health journey without rigid questionnaires.
 
-### 3. AI Coaching Chat
-- **Motivational Interviewing**: An AI coach uses therapeutic techniques to discuss the user's results.
-- **Context-Aware**: The chat is aware of the user's specific stage and scores, tailoring questions and reflections accordingly.
+### 3. Integrated Research Framework
+- **Multi-Agent Orchestration**: A backend system that routes conversations between Intake, Motivation, Education, and Coaching agents.
+- **Persistence Strata**: Full state management ensuring that conversation history and psychographic assessments persist across sessions.
 
 ## Tech Stack
-- **Frontend**: React (Vite), TypeScript, Tailwind CSS, shadcn/ui.
-- **Backend**: Python FastAPI.
-- **Deployment**: Netlify (Frontend).
-- **LLM**: Gemini 1.5 Flash
+- **Frontend**: React (Vite), TypeScript, Framer Motion (Animations), Tailwind CSS.
+- **Backend**: Python FastAPI, DSPy (LLM Orchestration).
+- **LLM**: Gemini 1.5 Flash (via Google AI Studio).
 
 ## Getting Started
 
@@ -107,11 +106,11 @@ Run `./stop_app.sh` in the terminal to stop the processes.
 
 ## Development History
 - **v1.0**: Initial Release with Readiness Assessment, Dashboard, and basic Chat.
-- **Update (Jan 2026)**:
-    - Renamed "Motivation" to "Readiness".
-    - Added global bottom navigation.
-    - Implemented Patient Lookup and Profile Persistence.
-    - Fixed UI/UX issues (scrolling, button overlaps).
+- **v2.0 (Prismatic Layer)**:
+    - Shifted to **Agentic Motivation Assessment** (Chat-based).
+    - Introduced the **Prismatic UI** (Glassmorphism, Outfit/Inter typography).
+    - Added **Wellness Insights** (Strengths/Growth Nodes) for natural motivation.
+    - Implemented global bottom navigation and mobile optimizations.
 
 ## Contributing
 We use the **Task Decoupled Planning (TDP)** methodology for all development. Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) and the [TDP Protocol](docs/process/TDP_DEV_PROTOCOL.md) before submitting PRs.

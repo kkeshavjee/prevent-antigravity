@@ -34,7 +34,7 @@
   .app-bg {
     @apply min-h-screen w-full relative overflow-hidden bg-[#0a0a0f];
   }
-
+  
   .app-bg::before {
     content: "";
     @apply absolute inset-0 z-0;
@@ -43,31 +43,46 @@
     filter: blur(80px);
   }
 
+  /* Mobile Optimization: Reduce blur on small screens */
+  @media (max-width: 640px) {
+    .app-bg::before {
+      filter: blur(40px);
+      background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.3) 0%, transparent 70%);
+    }
+  }
+
   /* Glassmorphism Panel */
   .glass-card {
     @apply backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-2xl;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Mobile Optimization: Simpler glass for better scroll performance */
+  @media (max-width: 640px) {
+    .glass-card {
+      @apply backdrop-blur-md bg-white/[0.04] border-white/5 shadow-lg;
+    }
   }
 
   .glass-card:hover {
-    @apply border-white/20 bg-white/[0.07];
+    @apply border-white/20 bg-white/[0.07] scale-[1.01];
   }
 
   /* Prismatic Typography */
   .text-prismatic {
     @apply font-extralight tracking-tight;
-    background: linear-gradient(to right, #ffffff, #94a3b8);
+    background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   /* Premium Buttons */
   .dawn-button {
-    @apply px-8 py-3 rounded-full border border-white/10 bg-white/5 text-white text-sm font-light tracking-[0.2em] uppercase backdrop-blur-md transition-all duration-300;
+    @apply px-8 py-3 rounded-full border border-white/10 bg-white/5 text-white text-sm font-light tracking-[0.2em] uppercase backdrop-blur-md transition-all duration-500;
   }
 
   .dawn-button:hover {
-    @apply bg-white/10 border-white/30 scale-105;
+    @apply bg-white/10 border-white/30 scale-105 shadow-[0_0_30px_rgba(255,255,255,0.05)];
   }
 }
 

@@ -33,6 +33,8 @@ class MotivationSignature(dspy.Signature):
     importance_rating = dspy.OutputField(desc="User's perceived importance of change (1-10), or -1 if unknown")
     confidence_rating = dspy.OutputField(desc="User's confidence in making change (1-10), or -1 if unknown")
     readiness_stage = dspy.OutputField(desc="Estimated Stage of Change: 'precontemplation', 'contemplation', 'preparation', 'action', or 'maintenance'")
+    barriers = dspy.OutputField(desc="Key barriers to change identified in the conversation (e.g. 'lack of time', 'cost')")
+    facilitators = dspy.OutputField(desc="Key facilitators or motivations for change identified (e.g. 'family support')")
 
 class EducationSignature(dspy.Signature):
     """

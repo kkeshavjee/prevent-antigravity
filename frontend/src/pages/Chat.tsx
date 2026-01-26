@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, ChevronLeft, Loader2, Apple } from 'lucide-react';
-// Navbar import removed
+import { Send, Loader2, User, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/api/client';
 
 export default function Chat() {
@@ -15,21 +15,17 @@ export default function Chat() {
         return newId;
     });
 
-    // Sync userId to localStorage if it's manually changed in the UI
     useEffect(() => {
         localStorage.setItem('antigravity_userId', userId);
     }, [userId]);
 
     const chatEndRef = useRef<HTMLDivElement>(null);
-    const userName = localStorage.getItem('userName') || 'Guest';
-
     const scrollToBottom = () => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }
     useEffect(scrollToBottom, [messages]);
 
-    // Initial greeting
     useEffect(() => {
         if (messages.length === 0) {
-            setMessages([{ sender: 'ai', text: "Hello! I'm Dawn, your Diabetes Prevention Assistant. To get started, please tell me your name or simply say 'hello'!" }]);
+            setMessages([{ sender: 'ai', text: "Hello! I'm Dawn, your Diabetes Prevention Assistant. I'm here to help you navigate your wellness journey with clarity and personalized support." }]);
         }
     }, []);
 
@@ -44,24 +40,11 @@ export default function Chat() {
             const result = await api.chat(userId, userMsg);
             setMessages(prev => [...prev, { sender: 'ai', text: result.response }]);
         } catch (error: any) {
-            console.error("Chat API error details:", {
-                message: error.message,
-                response: error.response,
-                code: error.code,
-                config: error.config
-            });
-
-            // Extract the most specific error message possible
-            let errorMsg = "Network Error";
-            if (error.response?.data?.detail) {
-                errorMsg = error.response.data.detail;
-            } else if (error.message) {
-                errorMsg = error.message;
-            }
-
+            console.error("Chat API error:", error);
+            let errorMsg = error.response?.data?.detail || error.message || "Network Interruption";
             setMessages(prev => [...prev, {
                 sender: 'ai',
-                text: `Sorry, I'm having trouble connecting to my brain right now. (Error: ${errorMsg})`
+                text: `I've encountered a brief disconnection from the strata. (Error: ${errorMsg}). Please try again shortly.`
             }]);
         } finally {
             setIsLoading(false);
@@ -70,72 +53,90 @@ export default function Chat() {
 
     return (
         <div className="flex flex-col h-full bg-transparent overflow-hidden">
-            <div className="flex items-center p-4 border-b border-white/10 flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3 border border-primary/20">
-                    <img src="/PREVENT logo.png" className="w-6 h-6 object-contain opacity-80" alt="Logo" />
+            {/* Header */}
+            <div className="flex items-center p-6 border-b border-white/10 flex-shrink-0 backdrop-blur-md bg-[#0a0a0f]/50">
+                <div className="w-12 h-12 rounded-full glass-card flex items-center justify-center mr-4 border-primary/20 shadow-[0_0_20px_rgba(234,179,8,0.1)] transition-transform hover:scale-110 duration-500">
+                    <img src="/PREVENT logo.png" className="w-7 h-7 object-contain opacity-90" alt="Logo" />
                 </div>
                 <div className="flex-1">
-                    <h2 className="text-lg font-extralight tracking-widest text-white uppercase">Dawn</h2>
-                    <div className="flex items-center space-x-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                        <span className="text-[10px] text-primary/60 uppercase tracking-widest font-light">Direct Assistance</span>
+                    <h2 className="text-xl font-extralight tracking-[0.2em] text-white uppercase flex items-center gap-2">
+                        Dawn <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+                    </h2>
+                    <div className="flex items-center space-x-2 mt-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(234,179,8,1)]"></span>
+                        <span className="text-[9px] text-primary font-medium uppercase tracking-[0.3em]">Neural Assistance Active</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-white/20 uppercase tracking-widest">ID:</span>
+                <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full scale-90">
+                    <span className="text-[9px] text-white/30 uppercase tracking-widest">ID:</span>
                     <input
                         type="text"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        className="text-[10px] text-white/40 bg-transparent border-none focus:ring-0 p-0 w-16 font-light"
-                        title="Edit User ID"
+                        className="text-[9px] text-white/50 bg-transparent border-none focus:ring-0 p-0 w-16 font-light uppercase tracking-tighter"
+                        title="Unified Health ID"
                     />
                 </div>
             </div>
 
-            <div className="flex-1 p-4 sm:p-6 space-y-6 overflow-y-auto custom-scrollbar">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.sender === 'ai' && (
-                            <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center self-start overflow-hidden">
-                                <img src="/PREVENT logo.png" className="w-4 h-4 object-contain" alt="Dawn" />
+            {/* Messages Container */}
+            <div className="flex-1 p-6 space-y-8 overflow-y-auto custom-scrollbar">
+                <AnimatePresence mode="popLayout">
+                    {messages.map((msg, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className={`flex items-start gap-4 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                        >
+                            <div className={`w-8 h-8 rounded-full glass-card flex items-center justify-center shrink-0 border-white/5 shadow-none mt-1 ${msg.sender === 'user' ? 'bg-primary/20 border-primary/20' : ''}`}>
+                                {msg.sender === 'user' ? <User className="w-4 h-4 text-primary" /> : <img src="/PREVENT logo.png" className="w-4 h-4 object-contain opacity-60" alt="Dawn" />}
                             </div>
-                        )}
-                        <div className={`max-w-[80%] px-5 py-3 rounded-2xl shadow-xl backdrop-blur-md ${msg.sender === 'user'
-                            ? 'bg-primary/20 border border-primary/30 text-white rounded-br-none'
-                            : 'bg-white/5 border border-white/10 text-white/90 rounded-bl-none'
-                            }`}>
-                            <p className="text-sm font-light leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                        </div>
-                    </div>
-                ))}
+                            <div className={`max-w-[85%] px-6 py-4 glass-card ${msg.sender === 'user'
+                                ? 'bg-primary/5 border-primary/20 text-white rounded-tr-none'
+                                : 'bg-white/[0.03] border-white/5 text-white/90 rounded-tl-none'
+                                }`}>
+                                <p className="text-sm font-light leading-relaxed whitespace-pre-wrap tracking-wide">{msg.text}</p>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
                 {isLoading && (
-                    <div className="flex justify-start items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                            <Loader2 className="animate-spin w-4 h-4 text-primary/60" />
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex justify-start items-center gap-3 pl-12"
+                    >
+                        <div className="flex gap-1">
+                            <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1, delay: 0 }} className="w-1 h-1 rounded-full bg-primary"></motion.span>
+                            <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1 h-1 rounded-full bg-primary"></motion.span>
+                            <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1 h-1 rounded-full bg-primary"></motion.span>
                         </div>
-                        <span className="text-[10px] text-white/20 tracking-widest uppercase italic">Dawn is thinking...</span>
-                    </div>
+                        <span className="text-[9px] text-white/20 tracking-[0.3em] uppercase italic font-light">Synthesizing response</span>
+                    </motion.div>
                 )}
                 <div ref={chatEndRef} />
             </div>
 
-            <div className="p-4 bg-transparent border-t border-white/10 flex-shrink-0">
-                <div className="relative group">
+            {/* Input Area */}
+            <div className="p-6 bg-transparent flex-shrink-0">
+                <div className="relative group max-w-2xl mx-auto">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Speak with Dawn..."
-                        className="w-full pl-6 pr-14 py-4 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-primary/40 focus:bg-white/10 transition-all text-sm font-light text-white placeholder:text-white/20"
+                        className="w-full pl-8 pr-16 py-5 bg-white/[0.03] border border-white/10 rounded-full focus:outline-none focus:border-primary/40 focus:bg-white/[0.06] transition-all text-sm font-light text-white placeholder:text-white/20 shadow-2xl"
                     />
                     <button
                         onClick={handleSend}
                         disabled={isLoading || !input.trim()}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-primary text-primary-foreground rounded-full hover:scale-105 transition-transform disabled:opacity-20 disabled:scale-100 shadow-lg shadow-primary/20"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 bg-primary text-primary-foreground rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-10 disabled:scale-100 flex items-center justify-center shadow-[0_0_20px_rgba(234,179,8,0.2)]"
                     >
-                        <Send className="w-4 h-4" />
+                        <Send className="w-4 h-4 ml-0.5" />
                     </button>
                 </div>
             </div>
