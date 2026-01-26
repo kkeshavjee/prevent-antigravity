@@ -27,6 +27,14 @@ This platform is intended for researching:
 - **Multi-Agent Orchestration**: A backend system that routes conversations between Intake, Motivation, Education, and Coaching agents.
 - **Persistence Strata**: Full state management ensuring that conversation history and psychographic assessments persist across sessions.
 
+### 4. Privacy and Security Features
+- **Privacy by Design**: We follow the 7 principles of Privacy by Design. Detailed information is available in [CONCEPT_005_PRIVACY_BY_DESIGN.md](docs/concepts/CONCEPT_005_PRIVACY_BY_DESIGN.md).
+- **Security Features**: Secure authentication, role-based access control, and pseudonymized data processing are standard.
+
+Detailed project requirements are documented in the [Product Requirements Document (PRD)](PRODUCT_REQUIREMENTS.md).
+
+To contribute, please see our [CONTRIBUTING.md](CONTRIBUTING.md) guide.
+
 ## Tech Stack
 - **Frontend**: React (Vite), TypeScript, Framer Motion (Animations), Tailwind CSS.
 - **Backend**: Python FastAPI, DSPy (LLM Orchestration).
@@ -34,18 +42,22 @@ This platform is intended for researching:
 
 ## Getting Started
 
-### Prerequisites
-- Node.js & npm
-- Python 3.9+
+### Installation & Setup
+
+1. **Download the Repository**: Clone the repository or download the ZIP and extract it to your local machine.
+2. **Configure API Key**:
+   - Obtain a free Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+   - Create a `.env` file in the `backend/` directory.
+   - Add your key: `GOOGLE_API_KEY=your_api_key_here`
 
 ### Quick Start
 
 #### Windows
 Double-click `start_app.bat`. This will:
 1.  Check for Node.js and Python.
-2.  Set up a Python virtual environment for the backend and install dependencies.
-3.  Install frontend dependencies (if missing).
-4.  Launch both **Backend** and **Frontend** in separate windows.
+2.  Set up a Python virtual environment and install dependencies.
+3.  Launch both **Backend** and **Frontend** in separate windows.
+4.  Open your browser and navigate to `http://localhost:8000` to access the application.
 
 #### macOS / Linux
 1.  Open Terminal.
@@ -69,20 +81,10 @@ Double-click `start_app.bat`. This will:
 3.  **Setup Backend**:
     ```bash
     cd backend
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     pip install -r requirements.txt
-    ```
-    #### Environment Configuration
-    The AI features require a Google Gemini API key.
-    - Create a `.env` file in the `backend/` directory (you can use `.env.example` as a template).
-    - Obtain a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-    - Add the key to your `.env` file:
-      ```env
-      GOOGLE_API_KEY=your_api_key_here
-      ```
-
-    #### Run Backend:
-    ```bash
-    python main.py
+    python -m uvicorn main:app --reload
     ```
     
 
