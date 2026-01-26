@@ -85,17 +85,6 @@ Double-click `start_app.bat`. This will:
     python main.py
     ```
     
-    #### Multiple API Keys (Runtime Switching)
-    You can configure a secondary key for testing or quota management:
-    1.  Add `GOOGLE_API_KEY_2=your_second_key` to your `.env` file.
-    2.  Switch keys at runtime (no restart needed) via API:
-        ```bash
-        # Switch to Secondary
-        curl -X POST "http://localhost:8000/api/config/key" -H "Content-Type: application/json" -d "{\"key_type\": \"secondary\"}"
-        
-        # Switch to Primary
-        curl -X POST "http://localhost:8000/api/config/key" -H "Content-Type: application/json" -d "{\"key_type\": \"primary\"}"
-        ```
 
 ## Development History
 - **v1.0**: Initial Release with Readiness Assessment, Dashboard, and basic Chat.
