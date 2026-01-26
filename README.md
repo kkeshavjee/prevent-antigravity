@@ -16,7 +16,7 @@ This platform is intended for researching:
 - **Wellness Strata Visualization**: A premium, "Prismatic" interface that visualizes health data through glassmorphism and subtle animations.
 - **Diabetes Risk Strata**: An interactive risk speedometer providing real-time feedback on clinical biomarkers.
 - **Wellness Insights**: Replaces clinical scoring with qualitative "Core Strengths" and "Growth Nodes" extracted from conversations.
-- **Patient Lookup**: Securely connects users to their specific profile and doctor based on their name.
+- **Unified Health ID**: Securely connects users to their personalized clinical profile via a physician-issued access code.
 
 ### 2. Agentic Chat (Dawn)
 - **Neural Coach Integration**: A conversational AI (Dawn) that performs agentic assessments of motivation, barriers, and facilitators.
