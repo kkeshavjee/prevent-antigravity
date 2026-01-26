@@ -10,7 +10,7 @@ We follow a **Feature Branching** model. Always branch from `main` and use descr
 - `fix/`: Bug fixes
 - `docs/`: Documentation updates
 - `chore/`: Maintenance tasks
-- `main`: The stable baseline. All code here should be production-ready and clinical-grade.
+- `main`: The stable baseline. All code here should be production-ready and clinical-grade. **Direct pushes are disabled; changes require an authorized Pull Request and Review.**
 
 ## Development Standard: Task Decoupled Planning (TDP)
 
