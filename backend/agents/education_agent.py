@@ -9,7 +9,7 @@ class EducationAgent(BaseAgent):
 
     async def process(self, user_input: str, state: AgentState) -> dict:
         # Call Gemini via MCP Server (handles history and profile injection)
-        result = self.mcp_server.predict(EducationSignature, state, user_input=user_input)
+        result = await self.mcp_server.predict(EducationSignature, state, user_input=user_input)
         
         return {
             "response": result.response,

@@ -101,8 +101,11 @@ class Orchestrator:
         if "updated_context" in result:
              state.context_variables.update(result["updated_context"])
              
-        if "next_agent" in result:
+        if "next_agent" in result and result["next_agent"]:
+            print(f"Orchestrator: Transitioning {user_id} from {state.current_agent} to {result['next_agent']}")
             state.current_agent = result["next_agent"]
+        else:
+            print(f"Orchestrator: Staying at {state.current_agent}")
             
         # Save state to DB
         await self.persistence.save_state(user_id, state)

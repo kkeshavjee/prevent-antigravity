@@ -3,11 +3,12 @@ import json
 import os
 from backend.models.data_models import AgentState, PatientProfile, Message, RiskLevel, Biomarkers
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "antigravity.db")
-
 class AsyncPersistence:
     def __init__(self):
-        self.db_path = DB_PATH
+        # Default path logic
+        default_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "antigravity.db")
+        # Always check environment variable for overrides (isolation)
+        self.db_path = os.getenv("ANTIGRAVITY_DB", default_path)
 
     async def init_db(self):
         async with aiosqlite.connect(self.db_path) as db:
@@ -19,6 +20,20 @@ class AsyncPersistence:
                     patient_profile TEXT,
                     context_variables TEXT,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS llm_interactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id TEXT,
+                    agent_name TEXT,
+                    signature_name TEXT,
+                    prompt_input TEXT,
+                    response_output TEXT,
+                    model_name TEXT,
+                    provider TEXT,
+                    latency_ms FLOAT,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
             await db.commit()
@@ -63,3 +78,12 @@ class AsyncPersistence:
                 patient_profile=profile,
                 context_variables=context
             )
+
+    async def log_interaction(self, user_id: str, agent_name: str, signature_name: str, prompt_input: str, response_output: str, model_name: str, provider: str, latency_ms: float):
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("""
+                INSERT INTO llm_interactions 
+                (user_id, agent_name, signature_name, prompt_input, response_output, model_name, provider, latency_ms)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (user_id, agent_name, signature_name, prompt_input, response_output, model_name, provider, latency_ms))
+            await db.commit()

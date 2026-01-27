@@ -9,41 +9,52 @@ class MotivationAgent(BaseAgent):
 
     async def process(self, user_input: str, state: AgentState) -> dict:
         # Call Gemini via MCP Server (handles history and profile injection)
-        result = self.mcp_server.predict(MotivationSignature, state, user_input=user_input)
+        result = await self.mcp_server.predict(MotivationSignature, state, user_input=user_input)
+        
+        # Defensive access to all optional fields
+        response_text = getattr(result, 'response', "I'm listening. Tell me more.")
+        readiness_score = getattr(result, 'readiness_score', None)
+        importance_rating = getattr(result, 'importance_rating', None)
+        confidence_rating = getattr(result, 'confidence_rating', None)
+        readiness_stage = getattr(result, 'readiness_stage', None)
+        barriers = getattr(result, 'barriers', None)
+        facilitators = getattr(result, 'facilitators', None)
         
         updated_context = {}
-        if result.readiness_score and float(result.readiness_score) > 0:
-            updated_context["readiness_score"] = float(result.readiness_score)
-            state.patient_profile.motivation_level = f"Readiness: {result.readiness_score}/10"
+        
+        try:
+            if readiness_score and float(readiness_score) > 0:
+                updated_context["readiness_score"] = float(readiness_score)
+                state.patient_profile.motivation_level = f"Readiness: {readiness_score}/10"
 
-        if result.importance_rating and float(result.importance_rating) > 0:
-            rating = float(result.importance_rating)
-            updated_context["importance_rating"] = rating
-            state.patient_profile.importance_rating = rating
+            if importance_rating and float(importance_rating) > 0:
+                rating = float(importance_rating)
+                updated_context["importance_rating"] = rating
+                state.patient_profile.importance_rating = rating
+                
+            if confidence_rating and float(confidence_rating) > 0:
+                rating = float(confidence_rating)
+                updated_context["confidence_rating"] = rating
+                state.patient_profile.confidence_rating = rating
+        except (ValueError, TypeError):
+            pass
             
-        if result.confidence_rating and float(result.confidence_rating) > 0:
-            rating = float(result.confidence_rating)
-            updated_context["confidence_rating"] = rating
-            state.patient_profile.confidence_rating = rating
-            
-        if result.readiness_stage:
-            stage = result.readiness_stage.lower()
+        if readiness_stage:
+            stage = str(readiness_stage).lower()
             updated_context["readiness_stage"] = stage
             state.patient_profile.readiness_stage = stage
 
-        if result.barriers:
-            # Assuming comma separated or similar if it's a string, or just save as is if it's treated as a list later
-            # For now, let's treat as description string or convert to list
-            barriers_list = [b.strip() for b in str(result.barriers).split(',')] if ',' in str(result.barriers) else [str(result.barriers)]
+        if barriers:
+            barriers_list = [b.strip() for b in str(barriers).split(',')] if ',' in str(barriers) else [str(barriers)]
             state.patient_profile.barriers = barriers_list
             updated_context["barriers"] = barriers_list
 
-        if result.facilitators:
-            facilitators_list = [f.strip() for f in str(result.facilitators).split(',')] if ',' in str(result.facilitators) else [str(result.facilitators)]
+        if facilitators:
+            facilitators_list = [f.strip() for f in str(facilitators).split(',')] if ',' in str(facilitators) else [str(facilitators)]
             state.patient_profile.facilitators = facilitators_list
             updated_context["facilitators"] = facilitators_list
 
         return {
-            "response": result.response,
+            "response": response_text,
             "updated_context": updated_context
         }

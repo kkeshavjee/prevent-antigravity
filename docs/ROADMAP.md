@@ -7,10 +7,10 @@
 ## Active Feature: Integration Tests
 *   [/] **Plan & Design**
     *   [x] Select Task & Create Branch
+    *   [x] Create refined implementation plan: [docs/plans/implementation_plan_integration_tests.md](docs/plans/implementation_plan_integration_tests.md)
     *   [ ] Read PRD Testing Requirements
-    *   [ ] Create `implementation_plan.md`
 *   [ ] **Implementation**
-    *   [ ] Create `tests/integration/`
+    *   [x] Create `tests/integration/` (Initial stubs completed)
     *   [ ] Implement End-to-End API tests
 
 ## Completed Features

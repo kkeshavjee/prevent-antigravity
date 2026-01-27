@@ -86,6 +86,27 @@ Double-click `start_app.bat`. This will:
     pip install -r requirements.txt
     python -m uvicorn main:app --reload
     ```
+
+## Testing
+
+Run integration tests to verify the system:
+
+```powershell
+# Install test dependencies
+pip install pytest aiosqlite httpx
+
+# Run all integration tests
+python -m pytest tests/integration/test_api_v1.py -v
+```
+
+Tests cover:
+- ✅ Health check & pseudonymized lookup (Privacy)
+- ✅ Audit trail persistence (Research compliance)
+- ✅ Agent state machine transitions
+- ✅ LLM rate limit resilience
+- ✅ Malformed response recovery
+
+For detailed documentation on the testing architecture, mock patterns, and troubleshooting, see **[docs/TESTING.md](docs/TESTING.md)**.
     
 
 ## Development History

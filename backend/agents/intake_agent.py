@@ -21,24 +21,29 @@ class IntakeAgent(BaseAgent):
         
         # Call Gemini via MCP Server (handles history and profile injection)
         print(f"IntakeAgent: Calling LLM via MCP with input '{user_input}'...")
-        result = self.mcp_server.predict(IntakeSignature, state, user_input=user_input)
+        result = await self.mcp_server.predict(IntakeSignature, state, user_input=user_input)
         print(f"IntakeAgent: LLM returned. Result: {result}")
         
-        if not result.response:
+        # Defensive access to result attributes
+        response_text = getattr(result, 'response', None)
+        extracted_name = getattr(result, 'extracted_name', None)
+        next_step = getattr(result, 'next_step', None)
+
+        if not response_text:
             print("IntakeAgent WARNING: LLM returned empty response!")
-            result.response = "I'm sorry, I couldn't process that. Could you say that again?"
+            response_text = "I'm sorry, I couldn't process that. Could you say that again?"
         
         updated_context = {}
-        if result.extracted_name:
-            state.patient_profile.name = result.extracted_name
-            updated_context["name"] = result.extracted_name
+        if extracted_name:
+            state.patient_profile.name = extracted_name
+            updated_context["name"] = extracted_name
 
-        next_agent = None
-        if result.next_step == 'transition_to_motivation':
-            next_agent = "motivation"
+        final_next_agent = None
+        if next_step == 'transition_to_motivation':
+            final_next_agent = "motivation"
 
         return {
-            "response": result.response,
-            "next_agent": next_agent,
+            "response": response_text,
+            "next_agent": final_next_agent,
             "updated_context": updated_context
         }

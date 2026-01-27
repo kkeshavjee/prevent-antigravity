@@ -10,6 +10,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:8080",
@@ -45,32 +47,37 @@ from backend.services.llm_config import configure_dspy
 @app.post("/api/config/key")
 async def switch_api_key(config: KeyConfigRequest):
     """
-    Switch the active Google API Key at runtime.
+    Switch the active API Key at runtime.
     """
     new_key = None
+    model_name = None
     
     if config.key_type == "primary":
-        import os
         new_key = os.getenv("GOOGLE_API_KEY")
         if not new_key:
-            raise HTTPException(status_code=400, detail="Primary key (GOOGLE_API_KEY) not found in environment.")
+            raise HTTPException(status_code=400, detail="Primary key (GOOGLE_API_KEY) not found.")
             
     elif config.key_type == "secondary":
-        import os
         new_key = os.getenv("GOOGLE_API_KEY_2")
         if not new_key:
-            raise HTTPException(status_code=400, detail="Secondary key (GOOGLE_API_KEY_2) not found in environment.")
+            raise HTTPException(status_code=400, detail="Secondary key (GOOGLE_API_KEY_2) not found.")
             
+    elif config.key_type == "openai":
+        new_key = os.getenv("OPENAI_API_KEY")
+        if not new_key:
+            raise HTTPException(status_code=400, detail="OpenAI key (OPENAI_API_KEY) not found.")
+        model_name = "openai/gpt-4o-mini"
+        
     elif config.key_type == "custom":
         if not config.custom_key:
-             raise HTTPException(status_code=400, detail="Custom key must be provided when type is 'custom'.")
+             raise HTTPException(status_code=400, detail="Custom key must be provided.")
         new_key = config.custom_key
         
     else:
-        raise HTTPException(status_code=400, detail="Invalid key_type. Must be 'primary', 'secondary', or 'custom'.")
+        raise HTTPException(status_code=400, detail="Invalid key_type.")
 
-    # Re-configure DSPy with the new key
-    configure_dspy(api_key=new_key)
+    # Re-configure DSPy
+    configure_dspy(api_key=new_key, model_name=model_name)
     
     return {"status": "success", "message": f"Switched to {config.key_type} key."}
 
@@ -138,6 +145,20 @@ async def lookup_patient(name: str):
 
 from backend.api.admin import router as admin_router
 app.include_router(admin_router)
+
+@app.get("/api/debug/state/{user_id}")
+async def get_state_debug(user_id: str):
+    """
+    Debug endpoint for integration tests to verify internal state progression.
+    NOT for production use.
+    """
+    state = await orchestrator.get_or_create_state(user_id)
+    return {
+        "user_id": user_id,
+        "current_agent": state.current_agent,
+        "current_stage": state.patient_profile.current_stage,
+        "history_count": len(state.conversation_history)
+    }
 
 @app.get("/health")
 async def health_check():
