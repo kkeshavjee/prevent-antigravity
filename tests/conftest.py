@@ -11,8 +11,11 @@ TEST_DB_PATH = "test_antigravity.db"
 def setup_test_env(monkeypatch):
     """
     Ensure all tests use the test database path and a clean environment.
+    Also provide dummy API keys so MCPServer initializes its LM stack.
     """
     monkeypatch.setenv("ANTIGRAVITY_DB", TEST_DB_PATH)
+    monkeypatch.setenv("GOOGLE_API_KEY", "dummy_google_key")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-dummy_openai_key")
     yield
 
 @pytest.fixture(scope="session", autouse=True)

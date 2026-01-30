@@ -24,10 +24,26 @@ export default function Chat() {
     useEffect(scrollToBottom, [messages]);
 
     useEffect(() => {
-        if (messages.length === 0) {
-            setMessages([{ sender: 'ai', text: "Hello! I'm Dawn, your Diabetes Prevention Assistant. I'm here to help you navigate your wellness journey with clarity and personalized support." }]);
-        }
-    }, []);
+        // Initial Greeting using Backend Intelligence
+        const fetchGreeting = async () => {
+            // Only fetch if empty to avoid double-fetching
+            if (messages.length === 0) {
+                setIsLoading(true);
+                try {
+                    // Send a focused prompt to trigger the intake/welcome flow
+                    // We don't display this prompt to the user
+                    const result = await api.chat(userId, "Hello.");
+                    setMessages([{ sender: 'ai', text: result.response }]);
+                } catch (e) {
+                    // Fallback if backend is offline
+                    setMessages([{ sender: 'ai', text: "Hello! I'm Dawn. I'm having trouble connecting to my brain right now, but I'm here to help once we're online." }]);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+        fetchGreeting();
+    }, [userId]); // Re-run if userId changes (e.g. manual input)
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;

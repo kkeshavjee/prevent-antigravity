@@ -8,15 +8,48 @@ class IntakeAgent(BaseAgent):
         super().__init__(mcp_server)
 
     async def process(self, user_input: str, state: AgentState) -> dict:
+        # 1. Handle Resume/Fresh Choice
+        if state.context_variables.get("pending_resume_choice"):
+            print(f"IntakeAgent: Handling resume choice for user input: '{user_input}'")
+            # Determine if they want to start fresh
+            lower_input = user_input.lower()
+            start_fresh = any(word in lower_input for word in ["fresh", "something else", "new", "start over", "mind"])
+            
+            # Clear the flag
+            updated_context = {"pending_resume_choice": False}
+            
+            if start_fresh:
+                print("IntakeAgent: User wants a fresh start. Wiping conversation history.")
+                # We wipe history but keep the profile
+                state.conversation_history = state.conversation_history[-1:] # Keep only the current turn's setup
+            
+            return {
+                "response": "Understood. Let's dive in. How are you feeling about your health goals currently?",
+                "next_agent": "motivation",
+                "updated_context": updated_context
+            }
+
         # Debug logging
         print(f"IntakeAgent: Processing request. Current profile name: '{state.patient_profile.name}'")
         
-        # If name is already present (e.g. from DB load), we can skip asking
+        # If name is already present (e.g. from DB load), we give them a choice
         if state.patient_profile.name and state.patient_profile.name != "User":
-             print(f"IntakeAgent: Name '{state.patient_profile.name}' is already known. Transitioning.")
+             print(f"IntakeAgent: Name '{state.patient_profile.name}' known. Offering resume choice.")
+             # Add a flag to context to track we are waiting for a resume choice
              return {
-                "response": f"Welcome back, {state.patient_profile.name}. It's great to see you again. Let's talk about your motivation for joining the Diabetes Prevention Program.",
-                "next_agent": "motivation"
+                "response": f"Welcome back, {state.patient_profile.name}! It's great to see you again. Would you like to continue from where we left off, or is there something else on your mind today?",
+                "next_agent": "intake", # Keep them in intake for one more turn to handle the choice
+                "updated_context": {"pending_resume_choice": True}
+            }
+        
+        # FAST PATH: If this is the very first interaction (history has 1 message: the user's 'Hello')
+        # and we don't know the name, return a static welcome to avoid LLM latency.
+        history_len = len(state.conversation_history)
+        if history_len <= 1 and (not state.patient_profile.name or state.patient_profile.name == "User"):
+            print(f"IntakeAgent: Startup detected (History size: {history_len}). Sending instant static welcome.")
+            return {
+                "response": "Hello! I'm Dawn, your Diabetes Prevention Assistant. I'm here to support your journey. To get started, may I ask your name?",
+                "next_agent": "intake"
             }
         
         # Call Gemini via MCP Server (handles history and profile injection)

@@ -107,8 +107,10 @@ class Orchestrator:
         else:
             print(f"Orchestrator: Staying at {state.current_agent}")
             
-        # Save state to DB
-        await self.persistence.save_state(user_id, state)
+        # Save state to DB (Fire-and-Forget for low latency)
+        import asyncio
+        asyncio.create_task(self.persistence.save_state(user_id, state))
+        # print("Orchestrator: Background save initiated.")
         
         return {
             "response": response_text,

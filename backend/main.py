@@ -81,6 +81,23 @@ async def switch_api_key(config: KeyConfigRequest):
     
     return {"status": "success", "message": f"Switched to {config.key_type} key."}
 
+@app.get("/api/config/info")
+async def get_config_info():
+    """
+    Observability Endpoint: Returns currently active LLM stack and configuration.
+    Use this to verify which API keys/Providers are enabled and their priority order.
+    """
+    lms = orchestrator.mcp_server.lms
+    stack_info = [f"{getattr(lm, 'provider_name', 'Unknown')} ({getattr(lm, 'model', 'Unknown')})" for lm in lms]
+    
+    return {
+        "status": "active",
+        "llm_priority_stack": stack_info,
+        "primary_provider": stack_info[0] if stack_info else "None",
+        "failover_enabled": len(stack_info) > 1,
+        "brain_connectivity": "Online" if stack_info else "Offline"
+    }
+
 # --- Chat Endpoints ---
 
 @app.post("/api/chat", response_model=OrchestratorResponse)

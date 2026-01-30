@@ -54,12 +54,17 @@ export default function Dashboard() {
         setIsLoading(true);
         setError('');
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/patient/lookup?name=${name}`, { timeout: 5000 });
+            // Using relative path to allow Vite proxy to handle the request consistently
+            const response = await axios.get(`/api/patient/lookup?name=${name}`, { timeout: 10000 });
             setPatientProfile(response.data);
             localStorage.setItem('userName', response.data.name);
-        } catch (err) {
-            console.error(err);
-            setError('Connection failed. Using sandbox profile.');
+            // SYNC ID: Save the user_id so Chat.tsx uses the same identity
+            if (response.data.user_id) {
+                localStorage.setItem('antigravity_userId', response.data.user_id);
+            }
+        } catch (err: any) {
+            console.error("Dashboard: Lookup failed", err);
+            setError(`Profile not found (${err.message}). Using sandbox mode.`);
             setPatientProfile({ ...DEMO_PATIENT, name: name });
             localStorage.setItem('userName', name);
         } finally {
@@ -115,6 +120,7 @@ export default function Dashboard() {
     }
 
     const hasReadinessData = patientProfile.readiness_stage && patientProfile.readiness_stage !== 'unknown';
+    const biomarkers = patientProfile.biomarkers || {};
 
     return (
         <motion.div
@@ -128,7 +134,7 @@ export default function Dashboard() {
                     <h1 className="text-4xl font-extralight text-white tracking-tight">
                         <span className="text-primary text-[10px] font-medium tracking-[0.8em] block mb-3 uppercase">DASHBOARD</span>
                         Welcome back,<br />
-                        <span className="text-prismatic font-normal">{patientProfile.name.split(' ')[0]}</span>
+                        <span className="text-prismatic font-normal">{patientProfile.name?.split(' ')[0] || "Friend"}</span>
                     </h1>
                     <div className="p-3 glass-card rounded-full">
                         <User className="w-5 h-5 text-white/40" />
@@ -166,10 +172,10 @@ export default function Dashboard() {
                         <h2 className="text-[10px] font-medium uppercase tracking-[0.4em] text-white/40">Vital Biomarkers</h2>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <BiomarkerCard label="HbA1c" value={`${patientProfile.biomarkers.a1c}%`} status="high" />
-                        <BiomarkerCard label="FBS" value={`${patientProfile.biomarkers.fbs}`} unit="mmol/L" status="high" />
-                        <BiomarkerCard label="Weight" value={`${patientProfile.biomarkers.weight}`} unit="kg" status="neutral" />
-                        <BiomarkerCard label="BP" value={`${patientProfile.biomarkers.bloodPressure.systolic}/${patientProfile.biomarkers.bloodPressure.diastolic}`} status="high" />
+                        <BiomarkerCard label="HbA1c" value={`${biomarkers.a1c || '--'}%`} status={(biomarkers.a1c > 5.7) ? "high" : "normal"} />
+                        <BiomarkerCard label="FBS" value={`${biomarkers.fbs || '--'}`} unit="mmol/L" status={(biomarkers.fbs > 5.6) ? "high" : "normal"} />
+                        <BiomarkerCard label="Weight" value={`${biomarkers.weight || '--'}`} unit="kg" status="neutral" />
+                        <BiomarkerCard label="BP" value={`${biomarkers.systolic_bp || '--'}/${biomarkers.diastolic_bp || '--'}`} status={(biomarkers.systolic_bp > 130) ? "high" : "normal"} />
                     </div>
                 </motion.section>
 
