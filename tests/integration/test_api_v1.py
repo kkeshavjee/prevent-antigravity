@@ -82,7 +82,10 @@ def test_full_journey_progression(client, global_llm_mock):
     mock_instance.return_value = mock_prediction
     global_llm_mock.return_value = mock_instance
     
-    client.post("/api/chat", json={"user_id": user_id, "user_input": "My name is JourneyTest"})
+    response = client.post("/api/chat", json={"user_id": user_id, "user_input": "My name is JourneyTest"})
+    
+    if response.status_code != 200:
+        pytest.fail(f"Chat request failed with {response.status_code}: {response.text}")
         
     # Verify transition
     debug_resp = client.get(f"/api/debug/state/{user_id}")

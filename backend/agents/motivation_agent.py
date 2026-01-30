@@ -54,7 +54,16 @@ class MotivationAgent(BaseAgent):
             state.patient_profile.facilitators = facilitators_list
             updated_context["facilitators"] = facilitators_list
 
+        # Handle Transition Logic
+        next_step = getattr(result, 'next_step', 'continue_motivation')
+        final_next_agent = None
+        
+        if next_step == 'transition_to_education':
+            print(f"MotivationAgent: Transition criteria met. Moving to Education.")
+            final_next_agent = "education"
+
         return {
             "response": response_text,
-            "updated_context": updated_context
+            "updated_context": updated_context,
+            "next_agent": final_next_agent
         }

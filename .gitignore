@@ -27,3 +27,11 @@ Thumbs.db
 
 # Documentation / Local Context
 docs/active_context.md
+
+# Debug and Test Outputs
+debug_output.txt
+test_output*.txt
+test_out.txt
+*.sqlite
+backend/antigravity.db
+

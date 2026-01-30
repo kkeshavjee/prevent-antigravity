@@ -25,23 +25,23 @@ const Splash = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative z-10 text-center flex flex-col items-center gap-10 max-w-[800px] px-8"
+                        className="relative z-10 text-center flex flex-col items-center gap-6 max-w-[800px] px-8"
                     >
-                        <div className="flex flex-col items-center gap-2 mb-4">
+                        <div className="flex flex-col items-center gap-2">
                             <img
                                 src="/PREVENT logo.png"
                                 alt="PREVENT Logo"
-                                className="w-[clamp(80px,15vw,150px)] h-auto opacity-90 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                                className="w-[clamp(60px,12vw,120px)] h-auto opacity-90 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                             />
                         </div>
 
-                        <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-extralight leading-[1.1] tracking-tight m-0 flex flex-col items-center gap-4">
-                            <span className="text-[0.9rem] font-normal tracking-[1.2em] opacity-60 text-primary mb-4 uppercase">D A W N</span>
+                        <h1 className="text-[clamp(2.5rem,8vw,4rem)] font-extralight leading-[1.1] tracking-tight m-0 flex flex-col items-center gap-2">
+                            <span className="text-[0.8rem] font-normal tracking-[1.2em] opacity-60 text-primary mb-2 uppercase">D A W N</span>
                             Welcome to your<br />
                             <span className="text-prismatic font-normal">new beginning.</span>
                         </h1>
 
-                        <p className="text-lg opacity-50 font-light tracking-wide">
+                        <p className="text-base opacity-50 font-light tracking-wide">
                             Personalized Wellness, Illuminated.
                         </p>
 
@@ -49,7 +49,7 @@ const Splash = () => {
                             whileHover={{ scale: 1.05, letterSpacing: '0.2em' }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleEnter}
-                            className="dawn-button mt-4"
+                            className="dawn-button"
                         >
                             ENTER
                         </motion.button>

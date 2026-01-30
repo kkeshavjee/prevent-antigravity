@@ -3,7 +3,7 @@ import json
 import logging
 import time
 from typing import Any, Dict, List, Type
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
 from backend.models.data_models import AgentState, PatientProfile
 from pydantic import ValidationError
 
@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("MCPServer")
 
 from backend.services.persistence import AsyncPersistence
+from backend.services.llm_config import get_lm_stack
 
 class MCPServer:
     """
@@ -21,71 +22,48 @@ class MCPServer:
 
     def __init__(self):
         self.persistence = AsyncPersistence()
+        self.lms = get_lm_stack()
+        self.predictor_cache = {} # Cache for dspy.Predict instances
+        logger.info(f"MCP Server initialized with {len(self.lms)} LMs available for failover.")
         logger.info("MCP Server initialized with Research Auditing.")
 
-    @retry(
-        retry=retry_if_exception_type(Exception),
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=10),
-        reraise=True
-    )
     async def predict(self, signature: Type[dspy.Signature], state: AgentState, **kwargs) -> Any:
         """
-        Executes a DSPy prediction with automated context management and research auditing.
+        Resilient Prediction: Loops through the LM stack until success.
+        Handles RateLimits by failing over to secondary/tertiary/OpenAI keys.
         """
-        start_time = time.time()
+        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-8:]])
+        profile_json = state.patient_profile.model_dump_json()
         
-        # 1. Standardize History
-        history_window = 10
-        history_str = "\n".join([f"{m.role}: {m.content}" for m in state.conversation_history[-history_window:]])
-
-        # 2. Standardize Profile Context
-        profile_context = state.patient_profile.model_dump_json()
-
-        # 3. Resolve Inputs
         inputs = kwargs.copy()
         if "history" in signature.input_fields: inputs["history"] = history_str
-        if "user_profile" in signature.input_fields: inputs["user_profile"] = profile_context
-        if "user_context" in signature.input_fields: 
-            inputs["user_context"] = f"Profile: {profile_context}\nStage: {state.patient_profile.current_stage}"
+        if "user_profile" in signature.input_fields: inputs["user_profile"] = profile_json
 
-        # 4. Execute Prediction
-        logger.info(f"MCP: Requesting {signature.__name__} for user {state.patient_profile.user_id}")
-        predictor = dspy.Predict(signature)
+        if not self.lms:
+            print("MCP: No LMs in cache. Fetching from config...")
+            self.lms = get_lm_stack()
+
+        print(f"MCP: Starting failover loop for {signature.__name__}. Active providers: {len(self.lms)}")
+
+        last_error = None
+        for i, lm in enumerate(self.lms):
+            provider = getattr(lm, 'provider_name', f'Provider_{i}')
+            print(f"MCP Attempt {i+1}: Trying {provider}...")
+            
+            try:
+                with dspy.context(lm=lm):
+                    if signature not in self.predictor_cache:
+                        self.predictor_cache[signature] = dspy.Predict(signature)
+                    
+                    predictor = self.predictor_cache[signature]
+                    result = predictor(**inputs)
+                    print(f"MCP SUCCESS: {provider} responded.")
+                    return result
+            except Exception as e:
+                print(f"MCP FAILURE: {provider} failed with: {str(e)[:100]}")
+                last_error = e
+                # Continue if it's a rate limit or transient error
+                continue 
         
-        try:
-            result = predictor(**inputs)
-            
-            # 5. Extract Metadata for Research
-            duration_ms = (time.time() - start_time) * 1000
-            
-            # Extract model info from DSPy settings
-            model_name = "unknown"
-            provider = "unknown"
-            if dspy.settings.lm:
-                model_name = getattr(dspy.settings.lm, 'model', 'unknown')
-                provider = "openai" if "gpt" in model_name.lower() else "google"
-
-            # 6. Log to "The Receipt" (Audit Trail)
-            input_summary = f"Signature: {signature.__name__} | Input: {kwargs.get('user_input', 'N/A')}"
-            output_summary = str(result.response) if hasattr(result, 'response') else str(result)
-            
-            # Background task to not block the response
-            import asyncio
-            asyncio.create_task(self.persistence.log_interaction(
-                user_id=state.patient_profile.user_id,
-                agent_name=state.current_agent,
-                signature_name=signature.__name__,
-                prompt_input=input_summary,
-                response_output=output_summary,
-                model_name=model_name,
-                provider=provider,
-                latency_ms=duration_ms
-            ))
-            
-            logger.info(f"MCP: {signature.__name__} completed ({provider}/{model_name}) in {duration_ms:.0f}ms")
-            return result
-            
-        except Exception as e:
-            logger.error(f"MCP ERROR in {signature.__name__}: {str(e)}")
-            raise e
+        print("MCP FATAL: All providers failed.")
+        raise last_error or RuntimeError("All LLM providers exhausted.")

@@ -1,46 +1,88 @@
 import dspy
 import os
-import os
 from dotenv import load_dotenv
+from typing import List, Optional
 
 # Load environment variables from the .env file in the current directory or backend directory
 load_dotenv()
 load_dotenv("backend/.env") # Fallback if running from root
 
+def get_lm_stack() -> List[dspy.LM]:
+    """
+    Returns a list of configured DSPy LM objects in order of priority:
+    1. Gemini (Primary Key)
+    2. Gemini (Secondary Key)
+    3. OpenAI (Fallback)
+    """
+    lms = []
+    
+    # 1. Gemini Primary
+    google_key_1 = os.getenv("GOOGLE_API_KEY")
+    if google_key_1:
+        try:
+            # Using generic dspy.LM for flexibility
+            lm = dspy.LM(model="gemini/gemini-2.0-flash", api_key=google_key_1)
+            # Tagging for identification
+            lm.provider_name = "Gemini Primary"
+            lms.append(lm)
+        except Exception as e:
+            print(f"Error checking Gemini Primary: {e}")
+
+    # 2. Gemini Secondary
+    google_key_2 = os.getenv("GOOGLE_API_KEY_2")
+    if google_key_2:
+        try:
+            lm = dspy.LM(model="gemini/gemini-2.0-flash", api_key=google_key_2)
+            lm.provider_name = "Gemini Secondary"
+            lms.append(lm)
+        except Exception as e:
+            print(f"Error checking Gemini Secondary: {e}")
+
+    # 3. Gemini Tertiary
+    google_key_3 = os.getenv("GOOGLE_API_KEY_3")
+    if google_key_3:
+        try:
+            lm = dspy.LM(model="gemini/gemini-2.0-flash", api_key=google_key_3)
+            lm.provider_name = "Gemini Tertiary"
+            lms.append(lm)
+        except Exception as e:
+            print(f"Error checking Gemini Tertiary: {e}")
+
+    # 4. OpenAI Fallback
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
+        try:
+            lm = dspy.LM(model="openai/gpt-4o-mini", api_key=openai_key)
+            lm.provider_name = "OpenAI Fallback"
+            lms.append(lm)
+        except Exception as e:
+            print(f"Error checking OpenAI: {e}")
+            
+    return lms
+
 def configure_dspy(api_key: str = None, model_name: str = None):
     """
-    Configures DSPy for Gemini or OpenAI.
+    Configures the global default DSPy LM.
+    If specific arguments are provided, uses them.
+    Otherwise, uses the highest priority available LM from the stack.
     """
-    # 1. Resolve API Key & Provider
-    openai_key = os.getenv("OPENAI_API_KEY")
-    google_key = os.getenv("GOOGLE_API_KEY")
-
-    # If user provided a specific key, we determine its type
     if api_key:
-        if api_key.startswith("sk-"): # Standard OpenAI key format
-            provider = "openai"
+        # Manual Override
+        if api_key.startswith("sk-"):
             final_model = model_name or "openai/gpt-4o-mini"
         else:
-            provider = "google"
-            final_model = model_name or "gemini/gemini-1.5-flash"
-        final_key = api_key
-    else:
-        # Auto-detect from environment
-        if openai_key:
-            provider = "openai"
-            final_key = openai_key
-            final_model = model_name or "openai/gpt-4o-mini"
-        elif google_key:
-            provider = "google"
-            final_key = google_key
-            final_model = model_name or "gemini/gemini-1.5-flash"
-        else:
-            print("Warning: No API Key found for OpenAI or Gemini.")
-            return
-
-    try:
-        lm = dspy.LM(model=final_model, api_key=final_key)
+            final_model = model_name or "gemini/gemini-2.0-flash"
+        
+        lm = dspy.LM(model=final_model, api_key=api_key)
         dspy.configure(lm=lm)
-        print(f"DSPy configured for {provider.upper()} ({final_model})")
-    except Exception as e:
-        print(f"Error configuring LM: {e}")
+        print(f"DSPy manually configured for {final_model}")
+        return
+
+    # Auto-detect using priority stack
+    stack = get_lm_stack()
+    if stack:
+        best_lm = stack[0]
+        dspy.configure(lm=best_lm)
+        print(f"DSPy configured globally with: {getattr(best_lm, 'provider_name', 'Unknown')}")
+    else:
+        print("Warning: No API Keys found for Gemini or OpenAI.")
